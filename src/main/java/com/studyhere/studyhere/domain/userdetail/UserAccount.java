@@ -1,4 +1,4 @@
-package com.studyhere.studyhere.domain.dto;
+package com.studyhere.studyhere.domain.userdetail;
 
 import com.studyhere.studyhere.domain.entity.Account;
 import lombok.Getter;
@@ -16,6 +16,7 @@ public class UserAccount extends User {
 
     public UserAccount(Account account) {
         super(account.getNickname(), account.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        this.account = account;
     }
 
 }

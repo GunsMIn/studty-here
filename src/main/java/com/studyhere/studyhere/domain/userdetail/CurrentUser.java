@@ -1,4 +1,4 @@
-package com.studyhere.studyhere.domain.dto;
+package com.studyhere.studyhere.domain.userdetail;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
