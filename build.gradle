@@ -31,7 +31,8 @@ dependencies {
 
     // npm
     implementation 'com.github.node-gradle:gradle-node-plugin:3.1.0'
-
+    //modelMapper
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
 
 
 
