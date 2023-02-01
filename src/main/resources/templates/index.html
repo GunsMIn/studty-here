@@ -42,8 +42,10 @@
                 <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                        aria-haspopup="true" aria-expanded="false">
-                        <svg  data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.name}"
+                        <svg th:if="${#strings.isEmpty(account?.profileImage)}" th:data-jdenticon-value="${#authentication.name}"
                              width="24" height="24" class="rounded border bg-light"></svg>
+                        <img th:if="${!#strings.isEmpty(account?.profileImage)}" th:src="${account.profileImage}"
+                             width="24" height="24" class="rounded border"/>
                     </a>
                     <div class="dropdown-menu dropdown-menu-sm-right" aria-labelledby="userDropdown">
                         <h6 class="dropdown-header">
@@ -58,22 +60,6 @@
                         </form>
                     </div>
                 </li>
-
-                <!--<div class="dropdown" sec:authorize="isAuthenticated()" >
-                    <button class="btn btn-secondary dropdown-toggle"  id="userDropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown button
-                    </button>
-                    <ul class="dropdown-menu">
-                        <h6 class="dropdown-header">
-                            <span sec:authentication="name">Username</span>
-                        </h6>
-                        <li><a class="dropdown-item" th:href="@{'/profile/' + ${#authentication.name}}">프로필</a></li>
-                        <li><a class="dropdown-item" th:href="@{'/settings/profile'}">설정</a></li>
-                        <form class="form-inline my-2 my-lg-0" action="#" th:action="@{/logout}" method="post">
-                            <button class="dropdown-item" type="submit">로그아웃</button>
-                        </form>
-                    </ul>
-                </div>-->
                 <div class="alert alert-warning" role="alert" th:if="${account !=null && !account.emailVerified}">
                     스터디히어에 가입을 완료하려면 <a th:href="@{/check-email}" class="alert-link">계정 인증 이메일을 확인</a>하세요
                 </div>
