@@ -30,7 +30,7 @@ public class SignUpForm {
         return Account.builder()
                 .nickname(nickname)
                 .email(email)
-                .password(encodePassword)
+                .password(encodePassword) // 암호화 한 비밀번호 저장
                 .studyEnrollmentResultByWeb(true)
                 .studyUpdatedByWeb(true)
                 .studyCreatedByWeb(true)

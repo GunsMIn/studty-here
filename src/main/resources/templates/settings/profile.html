@@ -30,7 +30,7 @@
                                 길지 않게 35자 이내로 입력하세요.
                             </small>
                             <small class="form-text text-danger" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}">
-                                조금 길어요.
+                                자기소개는 35자 이내로 작성해야해요😁
                             </small>
                         </div>
 
@@ -45,7 +45,6 @@
                                 옳바른 URL이 아닙니다. 예시처럼 입력해 주세요.
                             </small>
                         </div>
-
                         <div class="form-group">
                             <label for="company">직업</label>
                             <input id="company" type="text" th:field="*{occupation}" class="form-control"
@@ -54,7 +53,6 @@
                                 개발자? 매니저? 취준생? 대표님?
                             </small>
                         </div>
-
                         <div class="form-group">
                             <label for="location">활동 지역</label>
                             <input id="location" type="text" th:field="*{location}" class="form-control"
@@ -74,7 +72,7 @@
                                     aria-describedby="submitHelp">수정하기</button>
                         </div>
                     </form>
-                    <div class="col-sm-6">
+                   <div class="col-sm-6">
                         <div class="card text-center">
                             <div class="card-header">
                                 프로필 이미지
