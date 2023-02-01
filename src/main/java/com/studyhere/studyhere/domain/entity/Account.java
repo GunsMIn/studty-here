@@ -1,5 +1,6 @@
 package com.studyhere.studyhere.domain.entity;
 
+import com.studyhere.studyhere.domain.dto.Notifications;
 import com.studyhere.studyhere.domain.dto.Profile;
 import lombok.*;
 
@@ -92,7 +93,7 @@ public class Account {
         this.bio = profile.getBio();
         this.profileImage = profile.getProfileImage();
     }
-
+    /**이메일에 token 보낸지 1시간이 지났는지 check하는 메서드**/
     public boolean canSendConfirmEmail() {
         return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
     }
@@ -104,5 +105,19 @@ public class Account {
     /**비밀번호 변경**/
     public void changePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    /**알림설정 변경**/
+    public void changeNotifiacation(Notifications notifications) {
+        this.studyCreatedByEmail = notifications.isStudyCreatedByEmail();
+        this.studyCreatedByWeb = notifications.isStudyCreatedByWeb();
+        this.studyEnrollmentResultByEmail = notifications.isStudyEnrollmentResultByEmail();
+        this.studyEnrollmentResultByWeb = notifications.isStudyEnrollmentResultByWeb();
+        this.studyUpdatedByEmail = notifications.isStudyUpdatedByEmail();
+        this.studyUpdatedByWeb = notifications.isStudyUpdatedByWeb();
+    }
+    /**닉네임 변경**/
+    public void changeNickname(String newNickname) {
+        this.nickname = newNickname;
     }
 }

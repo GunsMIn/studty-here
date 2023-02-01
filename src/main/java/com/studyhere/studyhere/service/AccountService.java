@@ -1,6 +1,8 @@
 package com.studyhere.studyhere.service;
 
 import com.studyhere.studyhere.controller.ConsoleMailSender;
+import com.studyhere.studyhere.domain.dto.NicknameForm;
+import com.studyhere.studyhere.domain.dto.Notifications;
 import com.studyhere.studyhere.domain.dto.Profile;
 import com.studyhere.studyhere.domain.dto.SignUpForm;
 import com.studyhere.studyhere.domain.entity.Account;
@@ -9,6 +11,7 @@ import com.studyhere.studyhere.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.patterns.IToken;
+import org.modelmapper.ModelMapper;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,6 +36,7 @@ public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final ConsoleMailSender mailSender;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     /**
      * @param signUpForm 회원가입 시 필요한 request
@@ -65,10 +69,14 @@ public class AccountService implements UserDetailsService {
         mailSender.send(mail);
     }
 
+    /**로그인
+     * NickName을 Principal로 넣어주는 로그인 메서드
+     *
+     * **/
     public void login(Account account) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 new UserAccount(account), account.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_USER")));
-        log.info("로그인시 :{}",account.toString());
+
         SecurityContextHolder.getContext().setAuthentication(token);
     }
 
@@ -101,6 +109,8 @@ public class AccountService implements UserDetailsService {
     /**프로필 변경**/
     public void updateProfile(Account account, Profile profile) {
         account.changeProfile(profile);
+        //ModelMapper 사용
+        modelMapper.map(profile, account);
         /**주의! 현재 account는 detached객체라서 save()를 해줘야 변경이된다.**/
         accountRepository.save(account);
     }
@@ -110,5 +120,34 @@ public class AccountService implements UserDetailsService {
         /**현재 account는 detached객체**/
         account.changePassword(passwordEncoder.encode(newPassword));
         accountRepository.save(account); //merge 진행
+    }
+
+    /**알림 설정 변경**/
+    public void updateNotification(Account account, Notifications notifications) {
+        account.changeNotifiacation(notifications);
+        accountRepository.save(account);
+    }
+
+    /**닉네임 변경
+     *
+     * 닉네임 변경시 login()을 다시 해줘야 한다.
+     * 네비바 authentication 갱신 목적
+     * **/
+    public void updateNickname(Account account, NicknameForm nicknameForm) {
+        account.changeNickname(nicknameForm.getNickname());
+        accountRepository.save(account);
+        login(account);
+    }
+
+    public void sendLoginLink(Account account) {
+        //이메일 인증 토큰 생성
+        account.generateEmailCheckToken();
+        //이메일 토큰과 이메일 목표 url로 발송
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(account.getEmail());
+        mail.setSubject("스터디히어, 로그인 링크");
+        mail.setText("/login-by-email?token=" + account.getEmailCheckToken() +
+                "&email=" + account.getEmail());
+        mailSender.send(mail);
     }
 }
