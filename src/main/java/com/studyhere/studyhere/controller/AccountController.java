@@ -2,6 +2,7 @@ package com.studyhere.studyhere.controller;
 
 import com.studyhere.studyhere.domain.dto.SignUpForm;
 import com.studyhere.studyhere.domain.entity.Account;
+import com.studyhere.studyhere.domain.userdetail.CurrentUser;
 import com.studyhere.studyhere.repository.AccountRepository;
 import com.studyhere.studyhere.service.AccountService;
 import com.studyhere.studyhere.validator.SignUpFormValidator;
@@ -14,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
@@ -27,8 +29,6 @@ public class AccountController {
     private final AccountService accountService;
     private final AccountRepository accountRepository;
     private final SignUpFormValidator signUpFormValidator;
-
-
 
 
     @InitBinder("signUpForm")
@@ -78,13 +78,26 @@ public class AccountController {
             model.addAttribute("error", "Email Token 정보가 틀렸습니다.");
             return view;
         }
-        account.completeSignUp();
-        accountService.login(account);
+        accountService.checkEmail(account);
         model.addAttribute("numberOfUser", accountRepository.count());
         model.addAttribute("nickname", account.getNickname());
         return view;
     }
 
+
+
+    @GetMapping("/profile/{nickname}")
+    public String viewProfile(@PathVariable String nickname, @CurrentUser Account account, Model model) {
+        Account byNickname = accountRepository.findByNickname(nickname);
+        if (nickname == null) {
+            throw new IllegalStateException(nickname + "에 해당하는 사용자가 없습니다.");
+        }
+        // Owner인지 확인하는 flag
+        boolean isOwner = byNickname.equals(account);
+        model.addAttribute("account",byNickname);
+        model.addAttribute("isOwner", isOwner);
+        return "account/profile";
+    }
 
 
 }

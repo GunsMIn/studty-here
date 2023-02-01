@@ -1,5 +1,6 @@
 package com.studyhere.studyhere.domain.entity;
 
+import com.studyhere.studyhere.domain.dto.Profile;
 import lombok.*;
 
 import javax.persistence.*;
@@ -83,11 +84,25 @@ public class Account {
         return this.emailCheckToken.equals(token);
     }
 
+    /**프로필 변경감지 수정**/
+    public void changeProfile(Profile profile) {
+        this.url = profile.getUrl();
+        this.occupation = profile.getOccupation();
+        this.location = profile.getLocation();
+        this.bio = profile.getBio();
+        this.profileImage = profile.getProfileImage();
+    }
+
     public boolean canSendConfirmEmail() {
         return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
     }
 
     public boolean isValidateToken(String token) {
         return this.emailCheckToken.equals(token);
+    }
+
+    /**비밀번호 변경**/
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
     }
 }
