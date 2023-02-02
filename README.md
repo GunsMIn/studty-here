@@ -20,7 +20,8 @@
 ** 로그인 / 로그아웃 / 자동로그인(RememberMe) ** | :heavy_check_mark: |  
 **프로필 사진 등록** | :heavy_check_mark: |  
 **프로필 변경 , 비밀번호 변경, 알림 설정** | :heavy_check_mark: |  
-**가계부 기록(Record) 작성, 수정, 삭제, 복원,리스트** | :heavy_check_mark: |  
-**가계부 기록 수정, 삭제, 복원 시 가계부 잔고 정상적인 계산 로직** | :heavy_check_mark: | 
+**관심주제(Tag) 등록,삭제,자동완성** | :heavy_check_mark: |  
+**CSV파일 지역(Zone)객체로 ** | :heavy_check_mark: |  
+**지역 정보(Zone) 등록,삭제** | :heavy_check_mark: | 
 **AWS EC2 서버 Docker 배포** | :heavy_check_mark: |  
 **Gitlab CI & Crontab CD** | :heavy_check_mark: 
