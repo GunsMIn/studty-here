@@ -1,13 +1,15 @@
 package com.studyhere.studyhere.service;
 
 import com.studyhere.studyhere.controller.ConsoleMailSender;
-import com.studyhere.studyhere.domain.dto.NicknameForm;
-import com.studyhere.studyhere.domain.dto.Notifications;
-import com.studyhere.studyhere.domain.dto.Profile;
-import com.studyhere.studyhere.domain.dto.SignUpForm;
+import com.studyhere.studyhere.domain.dto.*;
 import com.studyhere.studyhere.domain.entity.Account;
+
+import com.studyhere.studyhere.domain.entity.AccountTag;
+import com.studyhere.studyhere.domain.entity.Tag;
+import com.studyhere.studyhere.domain.userdetail.CurrentUser;
 import com.studyhere.studyhere.domain.userdetail.UserAccount;
 import com.studyhere.studyhere.repository.AccountRepository;
+import com.studyhere.studyhere.repository.AccountTagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.patterns.IToken;
@@ -22,10 +24,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -34,14 +40,16 @@ import java.util.List;
 public class AccountService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
+    private final AccountTagRepository accountTagRepository;
+    private final TagService tagService;
     private final ConsoleMailSender mailSender;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
     /**
      * @param signUpForm 회원가입 시 필요한 request
-     *  save()와 sendSignUpEmail()메서드를 사용하여  회원가입 후 인증 이메일 발송
-     * **/
+     *                   save()와 sendSignUpEmail()메서드를 사용하여  회원가입 후 인증 이메일 발송
+     **/
     public Account processNewAccount(@Valid SignUpForm signUpForm) {
         //회원 저장
         Account newAccount = save(signUpForm);
@@ -51,14 +59,18 @@ public class AccountService implements UserDetailsService {
         return newAccount;
     }
 
-    /**회원 가입 save 메서드**/
+    /**
+     * 회원 가입 save 메서드
+     **/
     private Account save(@Valid SignUpForm signUpForm) {
         String encode = passwordEncoder.encode(signUpForm.getPassword());
         Account account = signUpForm.of(encode);
         return accountRepository.save(account);
     }
 
-    /**이메일에 token보내는 메서드**/
+    /**
+     * 이메일에 token보내는 메서드
+     **/
     private void sendSignUpEmail(Account newAccount) {
         // TODO 이메일 보내기
         SimpleMailMessage mail = new SimpleMailMessage();
@@ -69,10 +81,10 @@ public class AccountService implements UserDetailsService {
         mailSender.send(mail);
     }
 
-    /**로그인
+    /**
+     * 로그인
      * NickName을 Principal로 넣어주는 로그인 메서드
-     *
-     * **/
+     **/
     public void login(Account account) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 new UserAccount(account), account.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_USER")));
@@ -84,9 +96,9 @@ public class AccountService implements UserDetailsService {
      * 이메일 check 진행
      * 1. emailVerified 를 true로
      * 2. joinedAt 시간을 현재시산으로
-     *
+     * <p>
      * 자동로그인 진행
-     * **/
+     **/
     public void checkEmail(Account account) {
         account.completeSignUp();
         login(account);
@@ -96,17 +108,19 @@ public class AccountService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String emailOrNickname) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(emailOrNickname);
-        if(account == null){ // 이메일로 찾지 못한 경우 닉네임으로 찾는다.
+        if (account == null) { // 이메일로 찾지 못한 경우 닉네임으로 찾는다.
             account = accountRepository.findByNickname(emailOrNickname);
         }
-        if(account == null){ // 닉네임으로도 찾지 못한다면 에러를 던짐
+        if (account == null) { // 닉네임으로도 찾지 못한다면 에러를 던짐
             throw new UsernameNotFoundException(emailOrNickname);
         }
         // Principal 에 해당하는 객체를 리턴한다.
         return new UserAccount(account);
     }
 
-    /**프로필 변경**/
+    /**
+     * 프로필 변경
+     **/
     public void updateProfile(Account account, Profile profile) {
         account.changeProfile(profile);
         //ModelMapper 사용
@@ -115,30 +129,38 @@ public class AccountService implements UserDetailsService {
         accountRepository.save(account);
     }
 
-    /**비밀번호 변경**/
+    /**
+     * 비밀번호 변경
+     **/
     public void updatePassword(Account account, String newPassword) {
         /**현재 account는 detached객체**/
         account.changePassword(passwordEncoder.encode(newPassword));
         accountRepository.save(account); //merge 진행
     }
 
-    /**알림 설정 변경**/
+    /**
+     * 알림 설정 변경
+     **/
     public void updateNotification(Account account, Notifications notifications) {
         account.changeNotifiacation(notifications);
         accountRepository.save(account);
     }
 
-    /**닉네임 변경
-     *
+    /**
+     * 닉네임 변경
+     * <p>
      * 닉네임 변경시 login()을 다시 해줘야 한다.
      * 네비바 authentication 갱신 목적
-     * **/
+     **/
     public void updateNickname(Account account, NicknameForm nicknameForm) {
         account.changeNickname(nicknameForm.getNickname());
         accountRepository.save(account);
         login(account);
     }
 
+    /**
+     * 비밀번호 분실 시 로그인 링크 보내기
+     **/
     public void sendLoginLink(Account account) {
         //이메일 인증 토큰 생성
         account.generateEmailCheckToken();
@@ -150,4 +172,42 @@ public class AccountService implements UserDetailsService {
                 "&email=" + account.getEmail());
         mailSender.send(mail);
     }
+
+    /**
+     * 해당회원 조회 후 tag(관심 목록)추가
+     **/
+ /*   public void addTag(Account account, Tag tag) {
+        Optional<Account> optionalAccount = accountRepository.findById(account.getId());
+        optionalAccount.ifPresent(a -> a.getTags().add(tag));
+    }*/
+
+  /*  public Set<Tag> getTags(Account account) {
+        Optional<Account> optionalAccount = accountRepository.findById(account.getId());
+        Set<Tag> tags = optionalAccount.orElseThrow().getTags();
+        return tags;
+    }*/
+    public void addInterestOfMember(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+        //1.관심주제 제목으로 관심주제 생성(이미 존재하면 값 반환)
+        Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
+        //2.회원(account)과 관심주제(tag)를 accountTag(회원관심주제)에 저장
+        AccountTag accountTag = AccountTag.createAccountTag(account, tag);
+        accountTagRepository.save(accountTag);
+    }
+
+    /**
+     * 1. accountTag 에서 account로 해당 accountTag  조회 ->  (List<AccountTag>)
+     * 2. 회원의 태그 저장소(tagStore)에 해당 accountTag의 제목을 add
+     * 3. 회원의 태그 반환
+     * **/
+    public List<String> getTags(Account account) {
+        List<AccountTag> accountTags = accountTagRepository.findByAccount(account);
+        List<String> tagStore = new ArrayList<>();
+        for (AccountTag accountTag : accountTags) {
+            String title = accountTag.getTag().getTitle();
+            tagStore.add(title);
+        }
+        return tagStore;
+    }
+
+
 }

@@ -6,7 +6,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.*;
+
 @Entity
 @Getter
 @Setter
@@ -64,11 +65,12 @@ public class Account {
     /**스터디 변경 웹**/
     private boolean studyUpdatedByWeb = true;
 
-   /* @ManyToMany
-    private Set<Tag> tags = new HashSet<>();
+/*    @ManyToMany
+    private Set<Tag> tags = new HashSet<>();*/
 
-    @ManyToMany
-    private Set<Zone> zones = new HashSet<>();*/
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<AccountTag> accountTags = new ArrayList<>();
+
 
     /**계정 생성시 UUID를 사용하여 랜덤한 토큰 값 발급**/
     public void generateEmailCheckToken() {
@@ -120,4 +122,11 @@ public class Account {
     public void changeNickname(String newNickname) {
         this.nickname = newNickname;
     }
+
+    /**연관관계 편의 메서드**/
+    public void setAccountTags(AccountTag accountTags) {
+        this.accountTags.add(accountTags);
+        accountTags.setAccount(this);
+    }
+
 }
