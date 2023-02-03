@@ -1,20 +1,22 @@
 package com.studyhere.studyhere.service;
 
-import com.studyhere.studyhere.controller.ConsoleMailSender;
+import com.studyhere.studyhere.config.AppProperties;
 import com.studyhere.studyhere.domain.dto.*;
 import com.studyhere.studyhere.domain.entity.Account;
 
 import com.studyhere.studyhere.domain.entity.AccountTag;
 import com.studyhere.studyhere.domain.entity.Tag;
+import com.studyhere.studyhere.domain.entity.Zone;
 import com.studyhere.studyhere.domain.userdetail.CurrentUser;
 import com.studyhere.studyhere.domain.userdetail.UserAccount;
+import com.studyhere.studyhere.email.EmailMessage;
+import com.studyhere.studyhere.email.EmailService;
 import com.studyhere.studyhere.repository.AccountRepository;
 import com.studyhere.studyhere.repository.AccountTagRepository;
+import com.studyhere.studyhere.repository.ZoneRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.patterns.IToken;
 import org.modelmapper.ModelMapper;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,9 +27,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,10 +44,13 @@ public class AccountService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
     private final AccountTagRepository accountTagRepository;
+    private final ZoneRepository zoneRepository;
     private final TagService tagService;
-    private final ConsoleMailSender mailSender;
+    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
+    private final TemplateEngine templateEngine;
+    private final AppProperties appProperties;
 
     /**
      * @param signUpForm 회원가입 시 필요한 request
@@ -55,7 +61,7 @@ public class AccountService implements UserDetailsService {
         Account newAccount = save(signUpForm);
         //저장 완료 시 이메일 체크에 필요한 토큰 발급🔽
         newAccount.generateEmailCheckToken(); /**newAccount라는 객체는 detached 상태이기 때문에 @Transactional을 붙여줘서 persist상태를 유지시켜준다.  **/
-        sendSignUpEmail(newAccount);
+        sendSignUpConfirmEmail(newAccount);
         return newAccount;
     }
 
@@ -71,14 +77,23 @@ public class AccountService implements UserDetailsService {
     /**
      * 이메일에 token보내는 메서드
      **/
-    private void sendSignUpEmail(Account newAccount) {
-        // TODO 이메일 보내기
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo(newAccount.getEmail());
-        mail.setSubject("스터디히어, 회원 가입 인증");
-        mail.setText("/check-email-token?token=" + newAccount.getEmailCheckToken()
-                + "&email=" + newAccount.getEmail());
-        mailSender.send(mail);
+    public void sendSignUpConfirmEmail(Account newAccount) {
+        Context context = new Context();
+        context.setVariable("link", "/check-email-token?token=" + newAccount.getEmailCheckToken() +
+                "&email=" + newAccount.getEmail());
+        context.setVariable("nickname", newAccount.getNickname());
+        context.setVariable("linkName", "이메일 인증하기");
+        context.setVariable("message", "스터디히어 서비스를 사용하려면 링크를 클릭하세요.");
+        context.setVariable("host", appProperties.getHost());
+        String message = templateEngine.process("mail/simple-link", context);
+
+        EmailMessage emailMessage = EmailMessage.builder()
+                .to(newAccount.getEmail())
+                .subject("스터디히어, 회원 가입 인증")
+                .message(message)
+                .build();
+
+        emailService.sendEmail(emailMessage);
     }
 
     /**
@@ -124,7 +139,7 @@ public class AccountService implements UserDetailsService {
     public void updateProfile(Account account, Profile profile) {
         account.changeProfile(profile);
         //ModelMapper 사용
-        modelMapper.map(profile, account);
+        /*modelMapper.map(profile, account);*/
         /**주의! 현재 account는 detached객체라서 save()를 해줘야 변경이된다.**/
         accountRepository.save(account);
     }
@@ -162,7 +177,7 @@ public class AccountService implements UserDetailsService {
      * 비밀번호 분실 시 로그인 링크 보내기
      **/
     public void sendLoginLink(Account account) {
-        //이메일 인증 토큰 생성
+       /* //이메일 인증 토큰 생성
         account.generateEmailCheckToken();
         //이메일 토큰과 이메일 목표 url로 발송
         SimpleMailMessage mail = new SimpleMailMessage();
@@ -170,22 +185,9 @@ public class AccountService implements UserDetailsService {
         mail.setSubject("스터디히어, 로그인 링크");
         mail.setText("/login-by-email?token=" + account.getEmailCheckToken() +
                 "&email=" + account.getEmail());
-        mailSender.send(mail);
+        mailSender.send(mail);*/
     }
 
-    /**
-     * 해당회원 조회 후 tag(관심 목록)추가
-     **/
- /*   public void addTag(Account account, Tag tag) {
-        Optional<Account> optionalAccount = accountRepository.findById(account.getId());
-        optionalAccount.ifPresent(a -> a.getTags().add(tag));
-    }*/
-
-  /*  public Set<Tag> getTags(Account account) {
-        Optional<Account> optionalAccount = accountRepository.findById(account.getId());
-        Set<Tag> tags = optionalAccount.orElseThrow().getTags();
-        return tags;
-    }*/
     public void addInterestOfMember(@CurrentUser Account account, @RequestBody TagForm tagForm) {
         //1.관심주제 제목으로 관심주제 생성(이미 존재하면 값 반환)
         Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
@@ -209,5 +211,45 @@ public class AccountService implements UserDetailsService {
         return tagStore;
     }
 
+    /**해당 회원의 태그 지우기**/
+    public void removeTag(Account account, Tag tag) {
+        Account owner = accountRepository.findById(account.getId()).orElseThrow(() -> new IllegalStateException("존재 하지 않는 회원 입니다."));
+        AccountTag accountTag = accountTagRepository.findByAccountAndTag(owner, tag);
+        accountTagRepository.delete(accountTag);
+    }
+    /**회원의 지역 리스트 반환**/
+    public Set<Zone> getZones(Account account) {
+        Optional<Account> optionalAccount = accountRepository.findById(account.getId());
+        Account owner = optionalAccount.orElseThrow(() -> new IllegalStateException("해당 회원은 존재하지 않습니다"));
+        return owner.getZones();
+    }
 
+    /**해당 회원의 지역 추가**/
+    public void addZone(Account account, Zone zone) {
+        Account owner = accountRepository.findById(account.getId())
+                .orElseThrow(() -> new IllegalStateException("해당 회원은 존재하지 않습니다."));
+        owner.getZones().add(zone);
+    }
+
+    /**해당 회원의 지역정보 삭제**/
+    public void deleteZone(Account account, Zone zone) {
+        Account owner =
+                accountRepository.findById(account.getId()).orElseThrow(() -> new IllegalStateException("해당 회원은 존재하지 않습니다"));
+        owner.getZones().remove(zone);
+    }
+
+
+    /**
+     * 해당회원 조회 후 tag(관심 목록)추가
+     **/
+ /*   public void addTag(Account account, Tag tag) {
+        Optional<Account> optionalAccount = accountRepository.findById(account.getId());
+        optionalAccount.ifPresent(a -> a.getTags().add(tag));
+    }*/
+
+  /*  public Set<Tag> getTags(Account account) {
+        Optional<Account> optionalAccount = accountRepository.findById(account.getId());
+        Set<Tag> tags = optionalAccount.orElseThrow().getTags();
+        return tags;
+    }*/
 }
