@@ -28,10 +28,6 @@
 
 ## 체크리스트
 
-- [x] Swagger 기능 추가 : API 문서 자동화 용이 및 API 테스트 가능
-    - swagger
-      주소 : [http://ec2-54-248-132-84.ap-northeast-1.compute.amazonaws.com:8080/swagger-ui/](http://ec2-54-248-132-84.ap-northeast-1.compute.amazonaws.com:8080/swagger-ui/)
-
 - [x] GitLab CI&CD pipeline 구축 : 새 버전 소프트웨어 관리 및 테스트 가능
     - GitLab Project가 업데이트 되었는지 확인하고 업데이트되어 있는 경우, 현재 컨테이너 제거 후 재 실행할 수 있도록 deploy.sh 작성
     - 미리 작성된 Dockerfile을 통해 build
@@ -41,6 +37,10 @@
     - 회원가입 시, 아이디와 비밀번호를 입력받고, 중복된 아이디의 경우 회원가입 에러 발생
     - 회원가입 완료 시, 자동 로그인 기능 
     - 로그인 후, SMTP를 이용하여 이메일 인증 토큰을 발급
+- [x] Spring security
+    - Spring security의 form login 방식을 채택
+    - 인증 / 인가 
+    - rememberMe를 이용한 Remember-Me 토큰 쿠키 발급 -> 로그인 유지 
 - [x] 프로필
     - 프로필 입력 기능 : 한 줄 소개,링크,직업.활동 지역 (modelMapper를 이용한 view 데이터 전송)
     - 프로필 사진 등록 : jdenticon을 이용한 프로필 사진 등록
