@@ -23,7 +23,7 @@ public class AccountTag {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "tag_id")
     private Tag tag;
 

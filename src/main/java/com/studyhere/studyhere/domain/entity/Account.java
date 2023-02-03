@@ -65,12 +65,11 @@ public class Account {
     /**스터디 변경 웹**/
     private boolean studyUpdatedByWeb = true;
 
-/*    @ManyToMany
-    private Set<Tag> tags = new HashSet<>();*/
-
     @OneToMany(fetch = FetchType.LAZY)
     private List<AccountTag> accountTags = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Zone> zones = new HashSet<>();
 
     /**계정 생성시 UUID를 사용하여 랜덤한 토큰 값 발급**/
     public void generateEmailCheckToken() {

@@ -12,5 +12,7 @@ import java.util.List;
 public interface AccountTagRepository extends JpaRepository<AccountTag,Long> {
 
     List<AccountTag> findByAccount(Account account);
+
+    AccountTag findByAccountAndTag(Account account, Tag tag);
 }
 

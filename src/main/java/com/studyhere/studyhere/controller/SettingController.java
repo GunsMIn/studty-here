@@ -1,11 +1,15 @@
 package com.studyhere.studyhere.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studyhere.studyhere.domain.dto.*;
 import com.studyhere.studyhere.domain.entity.Account;
 import com.studyhere.studyhere.domain.entity.AccountTag;
 import com.studyhere.studyhere.domain.entity.Tag;
+import com.studyhere.studyhere.domain.entity.Zone;
 import com.studyhere.studyhere.domain.userdetail.CurrentUser;
 import com.studyhere.studyhere.repository.TagRepository;
+import com.studyhere.studyhere.repository.ZoneRepository;
 import com.studyhere.studyhere.service.AccountService;
 import com.studyhere.studyhere.service.AccountTagService;
 import com.studyhere.studyhere.service.TagService;
@@ -36,10 +40,12 @@ import java.util.stream.Collectors;
 public class SettingController {
 
     private final AccountService accountService;
-    private final AccountTagService accountTagService;
+    private final TagRepository tagRepository;
+    private final ZoneRepository zoneRepository;
     private final ModelMapper modelMapper;
     private final NicknameValidator nicknameValidator;
-    private final TagService tagService;
+    private final ObjectMapper objectMapper;
+
 
 
     @GetMapping("/settings/profile")
@@ -183,16 +189,66 @@ public class SettingController {
         return ResponseEntity.ok().build();
     }
 
-
     /**나의 관심 주제 보여주기
-     *
+     * 태그 자동완성 기능 추가
      *
      * **/
     @GetMapping("/settings/tags")
-    public String showTags(@CurrentUser Account account, Model model) {
+    public String showTags(@CurrentUser Account account, Model model) throws JsonProcessingException {
         model.addAttribute(account);
         List<String> tags = accountService.getTags(account);
         model.addAttribute("tags", tags);
+        //자동완성 기능 추가🔽
+        List<String> allTags = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
+        model.addAttribute("whitelist", objectMapper.writeValueAsString(allTags));
         return "settings/tags";
+    }
+
+    /**태그 값 넣기**/
+    @PostMapping("/settings/tags/remove")
+    @ResponseBody
+    public ResponseEntity deleteTags(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+        Tag tag = tagRepository.findByTitle(tagForm.getTagTitle());
+        if (tag == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        accountService.removeTag(account, tag);
+        return ResponseEntity.ok().build();
+    }
+
+    /**지역정보 추가 페이지이동**/
+    @GetMapping("/settings/zones")
+    public String zoneForm(@CurrentUser Account account,Model model) throws JsonProcessingException {
+        Set<Zone> zones = accountService.getZones(account);
+        //1.해당 회원의 Zone을 리스트(String) 형태로 전달
+        model.addAttribute("zones", zones.stream().map(Zone::toString).collect(Collectors.toList()));
+        //2.repository에서 Zone을 모두 조회하여 자동완성 기능 (zone(java)-> json)
+        List<String> allZones = zoneRepository.findAll().stream().map(Zone::toString).collect(Collectors.toList());
+        model.addAttribute("whitelist", objectMapper.writeValueAsString(allZones));
+        return "settings/zones";
+    }
+
+    /**회원의 지역정보 추가(add)**/
+    @PostMapping("/settings/zones/add")
+    @ResponseBody
+    public ResponseEntity addZone(@CurrentUser Account account,@RequestBody ZoneForm zoneForm) {
+
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
+        if (zone == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        accountService.addZone(account,zone);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/settings/zones/remove")
+    @ResponseBody
+    public ResponseEntity removeZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
+        if (zone == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        accountService.deleteZone(account,zone);
+        return ResponseEntity.ok().build();
     }
 }
