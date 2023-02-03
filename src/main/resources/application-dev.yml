@@ -1,0 +1,17 @@
+spring :
+  mail :
+    host : smtp.gmail.com
+    port : 587
+    username : gunwoo4670@gmail.com
+    password : ioykkhxjvooybrcv
+    properties :
+      mail :
+        smtp :
+          auth : true
+          starttls :
+            enable : true
+
+
+
+
+
