@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class ZoneService {
     private final ZoneRepository zoneRepository;
 
+    /**ZoneService가 bean으로 등록된 다음 바로 실행**/
     @PostConstruct
     public void initZoneData() throws IOException {
         //지역 리소스가 하나도 없을 때
