@@ -213,7 +213,10 @@ public class AccountService implements UserDetailsService {
 
     /**해당 회원의 태그 지우기**/
     public void removeTag(Account account, Tag tag) {
-        Account owner = accountRepository.findById(account.getId()).orElseThrow(() -> new IllegalStateException("존재 하지 않는 회원 입니다."));
+        //회원 조회
+        Account owner = accountRepository.findById(account.getId())
+                .orElseThrow(() -> new IllegalStateException("존재 하지 않는 회원 입니다."));
+        //
         AccountTag accountTag = accountTagRepository.findByAccountAndTag(owner, tag);
         accountTagRepository.delete(accountTag);
     }
@@ -228,6 +231,7 @@ public class AccountService implements UserDetailsService {
     public void addZone(Account account, Zone zone) {
         Account owner = accountRepository.findById(account.getId())
                 .orElseThrow(() -> new IllegalStateException("해당 회원은 존재하지 않습니다."));
+        //해당 회원의 지역에 save(),add()
         owner.getZones().add(zone);
     }
 
@@ -235,6 +239,7 @@ public class AccountService implements UserDetailsService {
     public void deleteZone(Account account, Zone zone) {
         Account owner =
                 accountRepository.findById(account.getId()).orElseThrow(() -> new IllegalStateException("해당 회원은 존재하지 않습니다"));
+        //해당 회원의 지역에 delete(),remove()
         owner.getZones().remove(zone);
     }
 
