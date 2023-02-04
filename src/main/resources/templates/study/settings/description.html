@@ -16,6 +16,10 @@
                 <form class="needs-validation" th:action="@{'/study/' + ${study.getPath()} + '/settings/description'}"
                       th:object="${studyDescriptionForm}" method="post" novalidate>
                     <div class="form-group">
+                        <label for="title">스터디 제목</label>
+                        <input type="text"  id="title" th:field="*{title}" class="form-control"
+                               placeholder="스터디 제목" aria-describedby="shortDescriptionHelp" required maxlength="20">
+
                         <label for="shortDescription">짧은 소개</label>
                         <textarea id="shortDescription" type="textarea" th:field="*{shortDescription}" class="form-control"
                                   placeholder="스터디를 짧게 소개해 주세요." aria-describedby="shortDescriptionHelp" required maxlength="100">

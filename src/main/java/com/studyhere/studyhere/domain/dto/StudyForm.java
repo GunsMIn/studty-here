@@ -31,6 +31,7 @@ public class StudyForm {
     private String fullDescription;
 
 
+
     public static Study of(StudyForm studyForm) {
         return Study.builder()
                 .path(studyForm.getPath())
