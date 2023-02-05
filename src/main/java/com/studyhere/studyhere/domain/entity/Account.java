@@ -13,7 +13,7 @@ import java.util.*;
 @Setter
 @EqualsAndHashCode(of = "id")
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor @ToString
 @NoArgsConstructor
 public class Account {
 
@@ -122,6 +122,12 @@ public class Account {
         this.nickname = newNickname;
     }
 
+    /**회원이 study의 manager인지 check메서드
+     * true이면 스터디의 manager
+     * **/
+    public boolean isManager(Study study) {
+       return study.getManagers().contains(this);
+    }
     /**연관관계 편의 메서드**/
     public void setAccountTags(AccountTag accountTags) {
         this.accountTags.add(accountTags);

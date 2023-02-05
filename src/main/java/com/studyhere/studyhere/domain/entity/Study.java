@@ -74,6 +74,10 @@ public class Study {
         this.managers.add(account);
     }
 
+    public void addTag(Tag tag) {
+        //study에 태그 넣기
+        this.getTags().add(tag);
+    }
 
     /**
      * 가입여부 확인 메서드
@@ -116,8 +120,79 @@ public class Study {
         this.shortDescription = studyDescriptionForm.getShortDescription();
         this.fullDescription = studyDescriptionForm.getFullDescription();
     }
-    /**스터디가 한글로 들어오는 것을 대비한 encodePath**/
+    /**스터디경로가 한글로 들어오는 것을 대비한 encodePath**/
     public String encodePath() {
         return URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
+    /**배너 사용유무(사용)**/
+    public void changeEnableBanner() {
+        this.useBanner = true;
+    }
+    /**배너 사용유무(미사용)**/
+    public void changeDisableBanner() {
+        this.useBanner = false;
+    }
+
+    /**배너 이미지 변경**/
+    public void changeBannerImage(String image) {
+        this.image = image;
+    }
+
+    /**배너 기본 이미지 설정**/
+    public String getImage() {
+        return image != null ? image : "/images/default_banner.png";
+    }
+
+    /**스터디 공개 설정 publish
+     * 1.스터디가 공개되지 않은 상태여야함
+     * 2.스터디가 종료되지 않은 상태여야함
+     * **/
+    public void publishStudyState() {
+        if (!this.isPublished()&& !this.isClosed()) {
+            this.published = true;
+            this.publishedDateTime = LocalDateTime.now();
+        }else{
+            throw new RuntimeException("스터디를 공개할 수 없는 상태입니다. 스터디를 이미 공개했거나 종료된 스터디입니다.");
+        }
+    }
+
+    /**스터디 마감하기 close
+     * 1.스터디가 공개된상태여야함
+     * 2.스터디가 종료되지 않은 상태여야함
+     * **/
+    public void closeStudyState() {
+        if (this.isPublished() && !this.isClosed()) {
+            this.closed = true;
+            this.closedDateTime = LocalDateTime.now();
+        }else{
+            throw new RuntimeException("스터디를 종료할 수 없습니다. 스터디를 공개하지 않았거나 이미 종료한 스터디입니다.");
+        }
+    }
+
+    /**스터디 인원 모집하기
+     * 1.스터디가 오픈된상태여야함
+     * 2.스터디가 마감되지 않은 상태여야함
+     * 3.1시간에 한번만 바꿀 수 있는 조건
+     * **/
+    public void enableRecruiting() {
+        if (checkRecruitCondition()) {
+            this.recruiting = true;
+            this.recruitingUpdatedDateTime = LocalDateTime.now();
+        }else {
+            throw new RuntimeException("인원 모집을 시작할 수 없습니다. 스터디를 공개하거나 한 시간 뒤 다시 시도하세요.");
+        }
+
+    }
+    /**스터디 팀원 모집 사용가능 여부
+     * 1.study가 오픈 상태인지 -> publish == ture
+     * 2.recruitingUpdatedDateTime이 null인지
+     * 3.recruitingUpdatedDateTime이 1시간 전인지
+     * true이면 스터디 팀원 모집 변경가능
+     * **/
+    public boolean checkRecruitCondition() {
+        return  this.published == true
+                && this.recruitingUpdatedDateTime == null
+                || this.recruitingUpdatedDateTime.isBefore(LocalDateTime.now().minusHours(1));
+    }
+
 }
