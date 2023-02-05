@@ -183,6 +183,22 @@ public class Study {
         }
 
     }
+
+    /**스터디 인원 모집 마감
+     * 1.스터디가 오픈된상태여야함
+     * 2.스터디가 마감되지 않은 상태여야함
+     * 3.1시간에 한번만 바꿀 수 있는 조건
+     * **/
+    public void disableRecruiting() {
+        if (checkRecruitCondition()) {
+            this.recruiting = false;
+            this.recruitingUpdatedDateTime = LocalDateTime.now();
+        }else{
+            throw new RuntimeException("인원 모집을 마감할 수 없습니다. 스터디를 공개하거나 한 시간 뒤 다시 시도하세요.");
+        }
+    }
+
+
     /**스터디 팀원 모집 사용가능 여부
      * 1.study가 오픈 상태인지 -> publish == ture
      * 2.recruitingUpdatedDateTime이 null인지
@@ -194,5 +210,31 @@ public class Study {
                 && this.recruitingUpdatedDateTime == null
                 || this.recruitingUpdatedDateTime.isBefore(LocalDateTime.now().minusHours(1));
     }
+    
+    /**스터디 path 수정(변경감지)**/
+    public void changePath(String newPath) {
+        this.path = newPath;
+    }
+    /**스터디 title 수정(변경감지)**/
+    public void changeTitle(String newTitle) {
+        this.title = newTitle;
+    }
 
+    /**스터디를 삭제할 수 있는지 여부 check
+     * 1.스터디를 공개 했을 때 삭제 불가능
+     * 2.스터디를 공개 하지 않았을 때는 삭제 가능
+     * **/
+
+    public boolean isRemovable() {
+        return !this.published;
+    }
+
+    public void addMembers(Account account) {
+        this.getMembers().add(account);
+        this.memberCount++;
+    }
+    public void removeMembers(Account account) {
+        this.getMembers().remove(account);
+        this.memberCount--;
+    }
 }

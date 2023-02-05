@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 public class StudyController {
 
     private final StudyService studyService;
+    private final StudyRepository studyRepository;
     private final ModelMapper modelMapper;
     private final StudyFormValidator studyFormValidator;
 
@@ -71,5 +72,19 @@ public class StudyController {
         return "study/members";
     }
 
+    /**스터디 가입**/
+    @GetMapping("/study/{path}/join")
+    public String joinStudy(@CurrentUser Account account, @PathVariable String path) {
+        Study study = studyRepository.findStudyWithMembersByPath(path);
+        studyService.addMember(study, account);
+        return "redirect:/study/" + study.encodePath() + "/members";
+    }
 
+    /**스터디 탈퇴**/
+    @GetMapping("/study/{path}/leave")
+    public String leaveStudy(@CurrentUser Account account, @PathVariable String path) {
+        Study study = studyRepository.findStudyWithMembersByPath(path);
+        studyService.removeMember(study, account);
+        return "redirect:/study/" + study.encodePath()+ "/members";
+    }
 }
