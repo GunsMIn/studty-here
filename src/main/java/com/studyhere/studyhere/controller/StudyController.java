@@ -13,10 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URLEncoder;
@@ -36,6 +33,7 @@ public class StudyController {
         webDataBinder.addValidators(studyFormValidator);
     }
 
+    /**스터디 개설 페이지 이동**/
     @GetMapping("/new-study")
     public String newStudyForm(@CurrentUser Account account, Model model) {
         model.addAttribute(account);
@@ -43,6 +41,7 @@ public class StudyController {
         return "study/form";
     }
 
+    /**스터디 생성**/
     @PostMapping("/new-study")
     public String newStudySubmit(@CurrentUser Account account, @Valid StudyForm studyForm, Errors errors, Model model) {
         if (errors.hasErrors()) {
@@ -54,7 +53,7 @@ public class StudyController {
         return "redirect:/study/" + URLEncoder.encode(newStudy.getPath(),StandardCharsets.UTF_8);
     }
 
-
+    /**스터디 상세보기**/
     @GetMapping("/study/{path}")
     public String viewStudy(@CurrentUser Account account, @PathVariable String path,Model model) {
         Study findStudy = studyService.findStudy(path);
@@ -63,6 +62,7 @@ public class StudyController {
         return "study/view";
     }
 
+    /**스터디 참여인 보기 페이지 이동**/
     @GetMapping("/study/{path}/members")
     public String viewStudyMembers(@CurrentUser Account account,@PathVariable String path,Model model) {
         Study study = studyService.checkStudy(path);
