@@ -165,7 +165,8 @@ public class StudySettingController {
         studyService.addZoneOfStudy(study, zone);
         return ResponseEntity.ok().build();
     }
-    /**스터디 지역 삭제제**/    @PostMapping("/zones/remove")
+    /**스터디 지역 삭제제**/
+    @PostMapping("/zones/remove")
     @ResponseBody
     public ResponseEntity removeZone(@CurrentUser Account account, @PathVariable String path,
                                   @RequestBody ZoneForm zoneForm) {
@@ -177,4 +178,50 @@ public class StudySettingController {
         studyService.removeZoneOfStudy(study, zone);
         return ResponseEntity.ok().build();
     }
+
+
+    /**
+     * 스터디 설정 변경 페이지 이동
+     **/
+    @GetMapping("/study")
+    public String studySettingForm(@CurrentUser Account account, @PathVariable String path,Model model) {
+        Study study = studyService.findStudyIfManager(account, path);
+        model.addAttribute("account", account);
+        model.addAttribute("study", study);
+        return "study/settings/study";
+    }
+
+    /**스터디 공개로 변경 (publish)**/
+    @PostMapping("/study/publish")
+    public String publishStudy(@CurrentUser Account account,@PathVariable String path,RedirectAttributes attributes) {
+        Study study = studyService.findStudyFetchManager(account, path);
+        studyService.publish(study);
+        attributes.addFlashAttribute("message", "스터디를 공개했습니다.");
+        return "redirect:/study/" + study.encodePath() + "/settings/study";
+    }
+
+    /**스터디 비공개로 변경 (스터디 close)**/
+    @PostMapping("/study/close")
+    public String closetStudy(@CurrentUser Account account,@PathVariable String path, RedirectAttributes attributes) {
+        Study study = studyService.findStudyFetchManager(account, path);
+        studyService.close(study);
+        attributes.addFlashAttribute("message", "스터디를 종료했습니다.");
+        return "redirect:/study/" + study.encodePath() + "/settings/study";
+    }
+
+    /**스터디 팀원 모집 시작**/
+    @PostMapping("/recruit/start")
+    public String startRecruit(@CurrentUser Account account, @PathVariable String path,Model model,RedirectAttributes attributes) {
+        Study study = studyService.findStudyFetchManager(account, path);
+        if (!study.checkRecruitCondition()) {
+            attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러번 변경할 수 없습니다.");
+            return "redirect:/study/" + study.encodePath() + "/settings/study";
+        }
+
+        studyService.enableRecruit(study);
+        attributes.addFlashAttribute("message", "인원모집을 시작합니다");
+        return "redirect:/study/" + study.encodePath() + "/settings/study";
+    }
+
+    /****/
 }

@@ -184,7 +184,6 @@ public class SettingController {
     @PostMapping("/settings/tags/add")
     @ResponseBody
     public ResponseEntity addTags(@CurrentUser Account account, @RequestBody TagForm tagForm) {
-        log.info("에이작스 요청 :{}",tagForm);
         accountService.addInterestOfMember(account, tagForm);
         return ResponseEntity.ok().build();
     }
@@ -222,7 +221,7 @@ public class SettingController {
         Set<Zone> zones = accountService.getZones(account);
         //1.해당 회원의 Zone을 리스트(String) 형태로 전달
         model.addAttribute("zones", zones.stream().map(Zone::toString).collect(Collectors.toList()));
-        //2.repository에서 Zone을 모두 조회하여 자동완성 기능 (zone(java)-> json)
+        //2.repository에서 Zone을 모두 조회하여 자동완성 기능 (zone(java)-> json)🔽
         List<String> allZones = zoneRepository.findAll().stream().map(Zone::toString).collect(Collectors.toList());
         model.addAttribute("whitelist", objectMapper.writeValueAsString(allZones));
         return "settings/zones";
@@ -232,7 +231,7 @@ public class SettingController {
     @PostMapping("/settings/zones/add")
     @ResponseBody
     public ResponseEntity addZone(@CurrentUser Account account,@RequestBody ZoneForm zoneForm) {
-
+        //1. 지역을 데이터베이스에서 조회
         Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
         if (zone == null) {
             return ResponseEntity.badRequest().build();
