@@ -12,19 +12,7 @@
 - **IDE** : IntelliJ
 <br>
 
-## 구현 완료
-**Function** | **완료** | 
-:------------ | :-------------| 
-**회원가입시 이메일 check Token 발급, 이메일 발송, 유효성 검사** | :heavy_check_mark: |  
-**Spring Security 인증 / 인가 필터 구현** | :heavy_check_mark: |  
-**로그인 / 로그아웃 / 자동로그인(RememberMe)** | :heavy_check_mark: |  
-**프로필 사진 등록** | :heavy_check_mark: |  
-**프로필 변경 , 비밀번호 변경, 알림 설정** | :heavy_check_mark: |  
-**관심주제(Tag) 등록,삭제,자동완성** | :heavy_check_mark: |  
-**CSV파일 지역(Zone)객체로** | :heavy_check_mark: |  
-**지역 정보(Zone) 등록,삭제** | :heavy_check_mark: | 
-**AWS EC2 서버 Docker 배포** | :heavy_check_mark: |  
-**Gitlab CI & Crontab CD** | :heavy_check_mark: 
+
 
 ## 체크리스트
 
@@ -49,3 +37,52 @@
 - [x] 관심주제와 활동지역 선택 기능 
     - 관심 주제 : Tagify 라이브러리 환경에서 Ajax를 이용한 비동기 처리(관심주제 추가,삭제)
     - 활동 지역 : zones_kr.csv 파일을 자바 객체로 Parsing하여 지역을 데이터베이스에 저장, Tagify 라이브러리 환경에서 Ajax를 이용한 비동기 처리(활동 지역 추가, 삭제)
+- [x] 스터디 등록,조회,수정
+    - 스터디 등록 시 summernote 라이브러리를 사용하여 스터디 등록 기능
+    - 스터디 조회 시 매니저여부,멤버여부,주제 조회,지역 조회 등 쿼리가 5개 나가는 것을 @EntityGraphe를 사용하여 쿼리 갯수 감소 및 시간 절약
+    - 스터디 수정 시 Manager인지 check 후 일반회원이면 AccessDeniedException 발생(권한 없음 예외)
+- [x] 스터디 배너 등록
+    - 스터디 배너 미등록시 기본 배너 이미지 제공
+    - 스터디 배너 jdenticon을 사용한 배너 이미지 등록,수정
+- [x] 스터디 태그 , 지역 추가/삭제
+    - 스터디 지역 Tagify 라이브러리 환경에서 Ajax를 이용한 비동기 처리(스터디 지역 추가, 삭제)
+    - 스터디 태그 Tagify 라이브러리 환경에서 Ajax를 이용한 비동기 처리(스터디 태그 추가, 삭제)
+    - 스터지 태그,지역 조회 시 @Entitygraphe를 사용하여 성능 최적화
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    ## 구현 완료
+**Function** | **완료** | 
+:------------ | :-------------| 
+**회원가입시 이메일 check Token 발급, 이메일 발송, 유효성 검사** | :heavy_check_mark: |  
+**Spring Security 인증 / 인가 필터 구현** | :heavy_check_mark: |  
+**로그인 / 로그아웃 / 자동로그인(RememberMe)** | :heavy_check_mark: |  
+**프로필 사진 등록** | :heavy_check_mark: |  
+**프로필 변경 , 비밀번호 변경, 알림 설정** | :heavy_check_mark: |  
+**관심주제(Tag) 등록,삭제,자동완성** | :heavy_check_mark: |  
+**CSV파일 지역(Zone)객체로** | :heavy_check_mark: |  
+**지역 정보(Zone) 등록,삭제** | :heavy_check_mark: | 
+**AWS EC2 서버 Docker 배포** | :heavy_check_mark: |  
+**Gitlab CI & Crontab CD** | :heavy_check_mark: 
