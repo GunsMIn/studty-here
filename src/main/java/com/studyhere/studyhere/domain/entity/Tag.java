@@ -2,6 +2,8 @@ package com.studyhere.studyhere.domain.entity;
 
 import com.studyhere.studyhere.domain.dto.TagForm;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Where(clause = "deleted = false")
+@SQLDelete(sql = "UPDATE tag SET deleted = true WHERE id = ?")
 public class Tag {
 
     @Id
@@ -33,6 +37,8 @@ public class Tag {
                 .build();
     }
 
-
+    /**SoftDeleteColumn**/
+    @Column(name = "deleted")
+    private boolean deleted = Boolean.FALSE;
 
 }

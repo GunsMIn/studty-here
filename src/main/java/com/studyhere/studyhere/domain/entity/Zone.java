@@ -1,6 +1,8 @@
 package com.studyhere.studyhere.domain.entity;
 
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
@@ -30,5 +32,6 @@ public class Zone {
     public String toString() {
         return String.format("%s(%s)/%s", city, localNameOfCity, province);
     }
+
 
 }

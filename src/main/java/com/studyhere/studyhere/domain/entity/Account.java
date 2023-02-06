@@ -3,10 +3,14 @@ package com.studyhere.studyhere.domain.entity;
 import com.studyhere.studyhere.domain.dto.Notifications;
 import com.studyhere.studyhere.domain.dto.Profile;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import static javax.persistence.CascadeType.*;
 
 @Entity
 @Getter
@@ -15,11 +19,19 @@ import java.util.*;
 @Builder
 @AllArgsConstructor @ToString
 @NoArgsConstructor
+@Where(clause = "deleted = false")
+@SQLDelete(sql = "UPDATE account SET deleted = true WHERE id = ?")
 public class Account {
 
     @Id
     @GeneratedValue
     private Long id;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = REMOVE)
+    private List<AccountTag> accountTags = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY,cascade = REMOVE)
+    private Set<Zone> zones = new HashSet<>();
 
     @Column(unique = true)
     private String email;
@@ -65,11 +77,9 @@ public class Account {
     /**스터디 변경 웹**/
     private boolean studyUpdatedByWeb = true;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<AccountTag> accountTags = new ArrayList<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Zone> zones = new HashSet<>();
+    /**SoftDeleteColumn**/
+    @Column(name = "deleted")
+    private boolean deleted = Boolean.FALSE;
 
     /**계정 생성시 UUID를 사용하여 랜덤한 토큰 값 발급**/
     public void generateEmailCheckToken() {

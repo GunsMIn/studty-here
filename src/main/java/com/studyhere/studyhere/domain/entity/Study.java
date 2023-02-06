@@ -13,6 +13,8 @@ import java.util.Set;
 
 import static javax.persistence.GenerationType.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.net.URLEncoder;
@@ -24,6 +26,8 @@ import java.util.Set;
 @Entity
 @Getter @Setter @EqualsAndHashCode(of = "id")
 @Builder @AllArgsConstructor @NoArgsConstructor
+@Where(clause = "deleted = false")
+@SQLDelete(sql = "UPDATE study SET deleted = true WHERE id = ?")
 public class Study {
 
     @Id @GeneratedValue
@@ -69,6 +73,11 @@ public class Study {
     private boolean useBanner;
 
     private int memberCount;
+
+    /**SoftDeleteColumn**/
+    @Column(name = "deleted")
+    private boolean deleted = Boolean.FALSE;
+
 
     public void addManager(Account account) {
         this.managers.add(account);
