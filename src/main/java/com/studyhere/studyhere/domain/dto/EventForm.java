@@ -43,6 +43,7 @@ public class EventForm {
                 .eventType(eventType)
                 .createdDateTime(LocalDateTime.now())
                 .endEnrollmentDateTime(endEnrollmentDateTime)
+                .limitOfEnrollments(limitOfEnrollments)
                 .startDateTime(startDateTime)
                 .endDateTime(endDateTime)
                 .createdBy(account)
