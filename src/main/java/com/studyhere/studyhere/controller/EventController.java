@@ -71,14 +71,14 @@ public class EventController {
     @GetMapping("/events/{id}")
     public String getEvent(@CurrentUser Account account, @PathVariable String path, @PathVariable("id") Event event,
                            Model model) {
-        Study study = studyService.findStudyFetchManager(account, path);
+        Study study = studyService.findStudy(path);
         model.addAttribute(account);
         model.addAttribute(event);
         model.addAttribute(study);
         return "event/view";
     }
 
-    /**해당 스터디의 event(모임) 보기**/
+    /**해당 스터디의 event(모임) 리스트 보기**/
     @GetMapping("/events")
     public String viewStudyEvents(@CurrentUser Account account, @PathVariable String path, Model model) {
         Study study = studyService.getStudy(path);
@@ -87,6 +87,7 @@ public class EventController {
         /**진행중인 이벤트 / 끝난 이벤트**/
         List<Event> newEvents = new ArrayList<>();
         List<Event> oldEvents = new ArrayList<>();
+        /**해당 모임의 종료시간이 지금보다 뒤라면 아직 진행중인 모임(새모임)**/
         eventList.forEach(e->{
             if (e.getEndDateTime().isAfter(LocalDateTime.now())) {
                 newEvents.add(e);
@@ -149,6 +150,13 @@ public class EventController {
         return "redirect:/study/" + study.encodePath() + "/events/" + event.getId();
     }
 
-    @PostMapping("/events/{id")
+    @PostMapping("/events/{id}/disenroll")
+    public String cancelEnrollment(@CurrentUser Account account, @PathVariable String path, @PathVariable("id") Event event) {
+        Study study = studyService.findStudyByPath(path);
+        eventService.cancelEnrollment(account, event);
+        return "redirect:/study/" + study.encodePath() + "/events/" + event.getId();
+    }
+
+
 
 }
