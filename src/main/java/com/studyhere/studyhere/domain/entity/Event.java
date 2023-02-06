@@ -18,7 +18,7 @@ import static javax.persistence.FetchType.*;
 @Entity
 @Getter
 @EqualsAndHashCode(of = "id")
-@Builder
+@Builder @ToString
 @NoArgsConstructor @AllArgsConstructor
 @Where(clause = "deleted = false")
 @SQLDelete(sql = "UPDATE event SET deleted = true WHERE id = ?")
@@ -75,7 +75,7 @@ public class Event {
      *
      * **/
     public boolean isEnrollableFor(UserAccount userAccount) {
-        //
+
         return !isAlreadyEnrolled(userAccount) && isNotClosed();
     }
 
@@ -116,9 +116,15 @@ public class Event {
         return false;
     }
 
+    /**모임의 남은 자리 check메서드**/
     public int numberOfRemainSpots() {
-        return this.limitOfEnrollments - (int) this.enrollments.stream().filter(Enrollment::isAccepted).count();
-
+        for (Enrollment enrollment : enrollments) {
+            if (enrollment.isAccepted()) {
+                limitOfEnrollments--;
+            }
+        }
+        return limitOfEnrollments;
+        //return this.limitOfEnrollments - (int) this.enrollments.stream().filter(Enrollment::isAccepted).count();
     }
 
     /**모임 확정 된 사람 count**/
@@ -144,5 +150,49 @@ public class Event {
      * **/
     public boolean confirmStatus() {
         return this.eventType.equals(EventType.FCFS) && this.limitOfEnrollments > this.confirmNumber();
+    }
+
+    /** true일 시 신청(enrollment) 수락 가능
+     * 1. 모임 타입이 관리자 확인일 때
+     * 2. 등록이 해당 등록을 가지고 있을때
+     * 3. 아직 참석하지 않았을 때
+     * 4. 아직 수락하지 않았을 때 **/
+    public boolean canAccept(Enrollment enrollment) {
+        return this.eventType == EventType.CONFIRMATIVE
+                && this.enrollments.contains(enrollment)
+                && !enrollment.isAttended()
+                && !enrollment.isAccepted();
+    }
+
+    /** true일 시  등록 거절 가능
+     * 1. 모임 타입이 관리자 확인일 때
+     * 2. 등록이 해당 등록을 가지고 있을때
+     * 3. 아직 참석하지 않았을 때
+     * 4. 수락한 상태일 때 거절 가능**/
+    public boolean canReject(Enrollment enrollment) {
+        return  this.eventType == EventType.CONFIRMATIVE
+                && this.enrollments.contains(enrollment)
+                && !enrollment.isAttended()
+                && enrollment.isAccepted();
+    }
+
+    /**선착순 모임일 시 대기인원 추가 가능 조건**/
+    public boolean isAbleToAcceptWaitingEnrollment() {
+        return this.eventType.equals(EventType.FCFS)
+                && this.limitOfEnrollments > this.enrollments.stream().filter(Enrollment::isAccepted).count();
+    }
+    
+    /**첫번째 등록을 가져오는 메서드**/
+    public Enrollment getFirstEnrollment() {
+        for (Enrollment enrollment : this.enrollments) {
+            if (!enrollment.isAccepted() ) {
+                return enrollment;
+            }
+        }
+        return null;
+    }
+
+    public void removeEnrollment(Enrollment enrollment) {
+        this.enrollments.remove(enrollment);
     }
 }
