@@ -172,4 +172,17 @@ public class StudyService {
     public void removeMember(Study study, Account account) {
         study.removeMembers(account);
     }
+
+    public Study getStudy(String path) {
+        Study study = checkStudy(path);
+        return study;
+    }
+
+    public Study findStudyByPath(String path) {
+        Study study = studyRepository.findStudyOnlyByPath(path);
+        if (study == null) {
+            throw new IllegalStateException("해당 스터디를 찾을 수 없습니다");
+        }
+        return study;
+    }
 }

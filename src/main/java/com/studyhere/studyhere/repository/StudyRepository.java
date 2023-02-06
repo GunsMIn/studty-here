@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
 public interface StudyRepository extends JpaRepository<Study, Long> {
+
     boolean existsByPath(String path);
 
     @EntityGraph(attributePaths = {"members", "managers", "tags", "zones"}, type = EntityGraph.EntityGraphType.LOAD)
@@ -17,4 +18,9 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
 
     @EntityGraph(attributePaths = "members" )
     Study findStudyWithMembersByPath(String path);
+
+    @EntityGraph(attributePaths = {"members", "managers"})
+    Study findStudyWithManagersAndMemebersByPath(String path);
+
+    Study findStudyOnlyByPath(String path);
 }
