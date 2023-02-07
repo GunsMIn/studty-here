@@ -1,18 +1,14 @@
 package com.studyhere.studyhere.service;
 
 import com.studyhere.studyhere.domain.dto.StudyDescriptionForm;
-import com.studyhere.studyhere.domain.dto.StudyForm;
-import com.studyhere.studyhere.domain.dto.TagForm;
 import com.studyhere.studyhere.domain.entity.Account;
 import com.studyhere.studyhere.domain.entity.Study;
 import com.studyhere.studyhere.domain.entity.Tag;
 import com.studyhere.studyhere.domain.entity.Zone;
-import com.studyhere.studyhere.domain.events.StudyCreatedEvent;
-import com.studyhere.studyhere.repository.AccountRepository;
+import com.studyhere.studyhere.domain.events.event.StudyCreatedEvent;
+import com.studyhere.studyhere.domain.events.event.StudyUpdateEvent;
 import com.studyhere.studyhere.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -65,10 +61,11 @@ public class StudyService {
         return study;
     }
 
-
+    /**알림 이벤트 발생**/
     /**스터디 수정**/
     public void updateStudy(Study study, StudyDescriptionForm studyDescriptionForm) {
         study.updateDescription(studyDescriptionForm);
+        eventPublisher.publishEvent(new StudyUpdateEvent(study,"스터디 소개를 수정했습니다."));
     }
 
     /**스터디 존재 여부 check메서드**/
@@ -114,22 +111,33 @@ public class StudyService {
     public void removeZoneOfStudy(Study study, Zone zone) {
         study.getZones().remove(zone);
     }
+
+    /**알림 이벤트 발생**/
     /**스터디 오픈하기**/
     public void publish(Study study) {
         study.publishStudyState();
         eventPublisher.publishEvent(new StudyCreatedEvent(study));
     }
-    /**스터디에 오픈마감하기**/
+
+    /**알림 이벤트 발생**/
+    /**스터디에 오픈마감하기 + 스터디 변경 알림**/
     public void close(Study study) {
         study.closeStudyState();
+        eventPublisher.publishEvent(new StudyUpdateEvent(study,"스터디가 종료됐습니다."));
     }
+
+    /**알림 이벤트 발생**/
     /**스터디 인원 모집 시작**/
     public void enableRecruit(Study study) {
         study.enableRecruiting();
+        eventPublisher.publishEvent(new StudyUpdateEvent(study,"팀원 모집을 시작합니다."));
     }
+
+    /**알림 이벤트 발생**/
     /**스터디 인원 모집 마감**/
     public void stopRecruit(Study study) {
         study.disableRecruiting();
+        eventPublisher.publishEvent(new StudyUpdateEvent(study,"팀원 모집을 중단합니다."));
     }
 
     /**1.스터디 경로 check -> 정규식에 맞는 study path인지 검사
