@@ -114,11 +114,10 @@ public class StudyService {
     public void removeZoneOfStudy(Study study, Zone zone) {
         study.getZones().remove(zone);
     }
-    /**스터디에 오픈하기**/
+    /**스터디 오픈하기**/
     public void publish(Study study) {
         study.publishStudyState();
         eventPublisher.publishEvent(new StudyCreatedEvent(study));
-
     }
     /**스터디에 오픈마감하기**/
     public void close(Study study) {
