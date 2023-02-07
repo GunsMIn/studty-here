@@ -4,14 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studyhere.studyhere.domain.dto.*;
 import com.studyhere.studyhere.domain.entity.Account;
-import com.studyhere.studyhere.domain.entity.AccountTag;
+
 import com.studyhere.studyhere.domain.entity.Tag;
 import com.studyhere.studyhere.domain.entity.Zone;
 import com.studyhere.studyhere.domain.userdetail.CurrentUser;
 import com.studyhere.studyhere.repository.TagRepository;
 import com.studyhere.studyhere.repository.ZoneRepository;
 import com.studyhere.studyhere.service.AccountService;
-import com.studyhere.studyhere.service.AccountTagService;
 import com.studyhere.studyhere.service.TagService;
 import com.studyhere.studyhere.validator.NicknameValidator;
 import com.studyhere.studyhere.validator.PasswordValidator;
@@ -40,6 +39,7 @@ import java.util.stream.Collectors;
 public class SettingController {
 
     private final AccountService accountService;
+    private final TagService tagService;
     private final TagRepository tagRepository;
     private final ZoneRepository zoneRepository;
     private final ModelMapper modelMapper;
@@ -160,48 +160,51 @@ public class SettingController {
     }
 
     /**ManyToMany**/
-/*    @GetMapping("/settings/tags")
-    public String showTags(@CurrentUser Account account, Model model) {
-        model.addAttribute(account);
-        Set<Tag> tags = accountService.getTags(account);
-        model.addAttribute("tags", tags.stream().map(t -> t.getTitle()).collect(Collectors.toList()));
-        return "settings/tags";
-    }
-
- /*   @PostMapping("/settings/tags/add")
-    @ResponseBody
-    public ResponseEntity addTags(@CurrentUser Account account, @RequestBody TagForm tagForm) {
-        log.info("에이작스 요청 :{}",tagForm);
-        //태그 제목이 없을 시에 save
-        Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
-        accountService.addTag(account, tag);
-        return ResponseEntity.ok().build();
-    }*/
-    /**ManyToMany**/
-
-
-    /**태그 값 넣기**/
-    @PostMapping("/settings/tags/add")
-    @ResponseBody
-    public ResponseEntity addTags(@CurrentUser Account account, @RequestBody TagForm tagForm) {
-        accountService.addInterestOfMember(account, tagForm);
-        return ResponseEntity.ok().build();
-    }
-
-    /**나의 관심 주제 보여주기
-     * 태그 자동완성 기능 추가
-     *
-     * **/
     @GetMapping("/settings/tags")
     public String showTags(@CurrentUser Account account, Model model) throws JsonProcessingException {
         model.addAttribute(account);
-        List<String> tags = accountService.getTags(account);
-        model.addAttribute("tags", tags);
-        //자동완성 기능 추가🔽
+
+        Set<Tag> tags = accountService.getTags(account);
+        model.addAttribute("tags", tags.stream().map(Tag::getTitle).collect(Collectors.toList()));
+
         List<String> allTags = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
         model.addAttribute("whitelist", objectMapper.writeValueAsString(allTags));
+
         return "settings/tags";
     }
+
+    @PostMapping("/settings/tags/add")
+    @ResponseBody
+    public ResponseEntity addTags(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+        Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
+        accountService.addTag(account, tag);
+        return ResponseEntity.ok().build();
+    }
+    /**ManyToMany**/
+
+
+//    /**태그 값 넣기**/
+//    @PostMapping("/settings/tags/add")
+//    @ResponseBody
+//    public ResponseEntity addTags(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+//        accountService.addInterestOfMember(account, tagForm);
+//        return ResponseEntity.ok().build();
+//    }
+//
+//    /**나의 관심 주제 보여주기
+//     * 태그 자동완성 기능 추가
+//     *
+//     * **/
+//    @GetMapping("/settings/tags")
+//    public String showTags(@CurrentUser Account account, Model model) throws JsonProcessingException {
+//        model.addAttribute(account);
+//        List<String> tags = accountService.getTags(account);
+//        model.addAttribute("tags", tags);
+//        //자동완성 기능 추가🔽
+//        List<String> allTags = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
+//        model.addAttribute("whitelist", objectMapper.writeValueAsString(allTags));
+//        return "settings/tags";
+//    }
 
     /**태그 값 넣기**/
     @PostMapping("/settings/tags/remove")

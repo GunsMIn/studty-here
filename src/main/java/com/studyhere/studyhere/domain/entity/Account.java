@@ -27,8 +27,11 @@ public class Account {
     @GeneratedValue
     private Long id;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = REMOVE)
-    private List<AccountTag> accountTags = new ArrayList<>();
+    @ManyToMany
+    private Set<Tag> tags = new HashSet<>();
+
+ /*   @OneToMany(fetch = FetchType.LAZY, cascade = REMOVE)
+    private List<AccountTag> accountTags = new ArrayList<>();*/
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = REMOVE)
     private Set<Zone> zones = new HashSet<>();
@@ -139,9 +142,9 @@ public class Account {
        return study.getManagers().contains(this);
     }
     /**연관관계 편의 메서드**/
-    public void setAccountTags(AccountTag accountTags) {
+  /*  public void setAccountTags(AccountTag accountTags) {
         this.accountTags.add(accountTags);
         accountTags.setAccount(this);
-    }
+    }*/
 
 }
