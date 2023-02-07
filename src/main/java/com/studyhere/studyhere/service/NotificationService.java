@@ -16,10 +16,15 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    public void markReadNotification(List<Notification> notifications) {
+    public void markReadNotifications(List<Notification> notifications) {
         for (Notification notification : notifications) {
             notification.markAsRead(true);
         }
         notificationRepository.saveAll(notifications);
+    }
+
+    public void markReadNotification(Notification notification) {
+        notification.markAsRead(true);
+        notificationRepository.save(notification);
     }
 }

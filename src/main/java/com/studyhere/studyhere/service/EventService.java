@@ -5,10 +5,14 @@ import com.studyhere.studyhere.domain.entity.Account;
 import com.studyhere.studyhere.domain.entity.Enrollment;
 import com.studyhere.studyhere.domain.entity.Event;
 import com.studyhere.studyhere.domain.entity.Study;
+import com.studyhere.studyhere.domain.events.event.EnrollmentAcceptedEvent;
+import com.studyhere.studyhere.domain.events.event.EnrollmentRejectedEvent;
+import com.studyhere.studyhere.domain.events.event.StudyUpdateEvent;
 import com.studyhere.studyhere.repository.EnrollmentRepository;
 import com.studyhere.studyhere.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +25,13 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Event createEvent(Study study, EventForm eventForm, Account account) {
         //연관관계 값들 넣어줌🔽(builder 사용)
         Event event = eventForm.of(account,study);
+        eventPublisher.publishEvent(new StudyUpdateEvent(event.getStudy(),
+                "'" + event.getTitle() + "' 모임을 만들었습니다."));
         return eventRepository.save(event);
     }
 
@@ -41,10 +48,14 @@ public class EventService {
     public void change(Event event, EventForm eventForm) {
         event.changeEvent(eventForm);
         event.acceptWaitingList();
+        eventPublisher.publishEvent(new StudyUpdateEvent(event.getStudy(),
+                "'" + event.getTitle() + "' 모임 정보를 수정했으니 확인하세요."));
     }
 
     public void delete(Event findEvent) {
         eventRepository.delete(findEvent);
+        eventPublisher.publishEvent(new StudyUpdateEvent(findEvent.getStudy(),
+                "'" + findEvent.getTitle() + "' 모임을 취소했습니다."));
     }
 
     /**
@@ -92,14 +103,18 @@ public class EventService {
         }
     }
 
+    /**알림 이벤트 발생**/
     /**등록 승인**/
     public void acceptEnrollment(Event event, Enrollment enrollment) {
         event.acceptConfirmativeType(enrollment);
+        eventPublisher.publishEvent(new EnrollmentAcceptedEvent(enrollment));
     }
 
+    /**알림 이벤트 발생**/
     /**등록 거절**/
     public void rejectEnrollment(Event event, Enrollment enrollment) {
         event.rejectConfirmativeType(enrollment);
+        eventPublisher.publishEvent(new EnrollmentRejectedEvent(enrollment));
     }
 
     /**모임 출석 체크인**/
