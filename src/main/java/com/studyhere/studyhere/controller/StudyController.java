@@ -72,7 +72,9 @@ public class StudyController {
         return "study/members";
     }
 
-    /**스터디 가입**/
+    /**스터디 가입
+     * 스터디 가입 시 study의 member(일반회원)에 넣어주기!
+     * **/
     @GetMapping("/study/{path}/join")
     public String joinStudy(@CurrentUser Account account, @PathVariable String path) {
         Study study = studyRepository.findStudyWithMembersByPath(path);

@@ -7,6 +7,7 @@ import com.studyhere.studyhere.domain.entity.Account;
 import com.studyhere.studyhere.domain.entity.Study;
 import com.studyhere.studyhere.domain.entity.Tag;
 import com.studyhere.studyhere.domain.entity.Zone;
+import com.studyhere.studyhere.domain.events.StudyCreatedEvent;
 import com.studyhere.studyhere.repository.AccountRepository;
 import com.studyhere.studyhere.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,11 @@ import static com.studyhere.studyhere.domain.dto.StudyForm.*;
 public class StudyService {
 
     private final StudyRepository studyRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    /**스터디 생성**/
+    /**스터디 생성
+     * 알림처리
+     * **/
     public Study createNewStudy(Study study, Account account) {
         Study newStudy = studyRepository.save(study);
         newStudy.addManager(account);
@@ -113,6 +117,8 @@ public class StudyService {
     /**스터디에 오픈하기**/
     public void publish(Study study) {
         study.publishStudyState();
+        eventPublisher.publishEvent(new StudyCreatedEvent(study));
+
     }
     /**스터디에 오픈마감하기**/
     public void close(Study study) {
