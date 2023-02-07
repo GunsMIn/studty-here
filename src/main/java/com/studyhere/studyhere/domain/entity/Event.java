@@ -2,6 +2,7 @@ package com.studyhere.studyhere.domain.entity;
 
 
 import com.studyhere.studyhere.domain.dto.EventForm;
+import com.studyhere.studyhere.domain.entity.enumtype.EventType;
 import com.studyhere.studyhere.domain.userdetail.UserAccount;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -11,6 +12,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.EnumType.*;
 import static javax.persistence.FetchType.*;
@@ -35,6 +37,7 @@ public class Event {
     private Account createdBy;
 
     @OneToMany(mappedBy = "event")
+    @OrderBy("enrolledAt")
     private List<Enrollment> enrollments = new ArrayList<>();
 
     @Column(nullable = false)
@@ -76,7 +79,7 @@ public class Event {
      * **/
     public boolean isEnrollableFor(UserAccount userAccount) {
 
-        return !isAlreadyEnrolled(userAccount) && isNotClosed();
+        return !isAlreadyEnrolled(userAccount) && isNotClosed() && !isAttended(userAccount);
     }
 
     /**
@@ -86,7 +89,7 @@ public class Event {
      *
      * **/
     public boolean isDisenrollableFor(UserAccount userAccount) {
-        return isNotClosed() && isAlreadyEnrolled(userAccount);
+        return isNotClosed() && isAlreadyEnrolled(userAccount) && !isAttended(userAccount);
     }
 
     /**모집 등록 마감 시간이 현재 시간보다 뒤에있을경우 check**/
@@ -191,8 +194,41 @@ public class Event {
         }
         return null;
     }
-
+    /**연관관계 삭제**/
     public void removeEnrollment(Enrollment enrollment) {
         this.enrollments.remove(enrollment);
     }
+
+    public void acceptWaitingList() {
+        if (this.isAbleToAcceptWaitingEnrollment()) {
+            var waitingList = getWaitingList();
+            int numberToAccept = (int) Math.min(this.limitOfEnrollments - this.getNumberOfAcceptedEnrollments(), waitingList.size());
+            waitingList.subList(0, numberToAccept).forEach(e -> e.changeAccepted(true));
+        }
+    }
+
+    private List<Enrollment> getWaitingList() {
+        return this.enrollments.stream().filter(enrollment -> !enrollment.isAccepted()).collect(Collectors.toList());
+    }
+
+    public long getNumberOfAcceptedEnrollments() {
+        return this.enrollments.stream().filter(Enrollment::isAccepted).count();
+    }
+
+    /**모인 신청 승인할 수 있는 상태*/
+    public void acceptConfirmativeType(Enrollment enrollment) {
+        if (this.eventType.equals(EventType.CONFIRMATIVE) &&
+                this.limitOfEnrollments > this.enrollments.stream().filter(Enrollment::isAttended).count()) {
+            enrollment.changeAccepted(true);
+        }
+    }
+    
+    /**모임 신청 거절 할 수 있는 상태**/
+    public void rejectConfirmativeType(Enrollment enrollment) {
+        if (this.eventType == EventType.CONFIRMATIVE) {
+            enrollment.changeAccepted(false);
+        }
+    }
+
+
 }

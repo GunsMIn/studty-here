@@ -2,7 +2,7 @@ package com.studyhere.studyhere.domain.dto;
 
 import com.studyhere.studyhere.domain.entity.Account;
 import com.studyhere.studyhere.domain.entity.Event;
-import com.studyhere.studyhere.domain.entity.EventType;
+import com.studyhere.studyhere.domain.entity.enumtype.EventType;
 import com.studyhere.studyhere.domain.entity.Study;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;

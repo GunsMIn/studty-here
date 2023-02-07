@@ -2,6 +2,7 @@ package com.studyhere.studyhere.controller;
 
 import com.studyhere.studyhere.domain.dto.EventForm;
 import com.studyhere.studyhere.domain.entity.Account;
+import com.studyhere.studyhere.domain.entity.Enrollment;
 import com.studyhere.studyhere.domain.entity.Event;
 import com.studyhere.studyhere.domain.entity.Study;
 import com.studyhere.studyhere.domain.userdetail.CurrentUser;
@@ -142,7 +143,7 @@ public class EventController {
         log.info("삭제 완료!");
         return "redirect:/study/" + study.encodePath() + "/events";
     }
-
+    /**모임 신청**/
     @PostMapping("/events/{id}/enroll")
     public String newEnrollment(@CurrentUser Account account,@PathVariable String path,@PathVariable("id") Event event) {
         Study study = studyService.findStudyByPath(path);
@@ -157,6 +158,37 @@ public class EventController {
         return "redirect:/study/" + study.encodePath() + "/events/" + event.getId();
     }
 
+    @GetMapping("events/{eventId}/enrollments/{enrollmentId}/accept")
+    public String acceptEnrollment(@CurrentUser Account account, @PathVariable String path,
+                                   @PathVariable("eventId") Event event, @PathVariable("enrollmentId") Enrollment enrollment) {
+        Study study = studyService.findStudyIfManager(account, path);
+        eventService.acceptEnrollment(event, enrollment);
+        return "redirect:/study/" + study.encodePath() + "/events/" + event.getId();
+    }
+    @GetMapping("/events/{eventId}/enrollments/{enrollmentId}/reject")
+    public String rejectEnrollment(@CurrentUser Account account, @PathVariable String path,
+                                   @PathVariable("eventId") Event event, @PathVariable("enrollmentId") Enrollment enrollment) {
+        Study study = studyService.findStudyIfManager(account, path);
+        eventService.rejectEnrollment(event, enrollment);
+        return "redirect:/study/" + study.encodePath() + "/events/" + event.getId();
+    }
+
+
+    @GetMapping("/events/{eventId}/enrollments/{enrollmentId}/checkin")
+    public String checkInEnrollment(@CurrentUser Account account, @PathVariable String path,
+                                    @PathVariable("eventId") Event event, @PathVariable("enrollmentId") Enrollment enrollment) {
+        Study study = studyService.findStudyIfManager(account, path);
+        eventService.checkInEnrollment(enrollment);
+        return "redirect:/study/" + study.encodePath() + "/events/" + event.getId();
+    }
+
+    @GetMapping("/events/{eventId}/enrollments/{enrollmentId}/cancel-checkin")
+    public String cancelCheckInEnrollment(@CurrentUser Account account, @PathVariable String path,
+                                          @PathVariable("eventId") Event event, @PathVariable("enrollmentId") Enrollment enrollment) {
+        Study study = studyService.findStudyIfManager(account, path);
+        eventService.cancelCheckInEnrollment(enrollment);
+        return "redirect:/study/" + study.encodePath() + "/events/" + event.getId();
+    }
 
 
 }
