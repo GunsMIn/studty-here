@@ -4,7 +4,7 @@ import com.studyhere.studyhere.config.AppProperties;
 import com.studyhere.studyhere.domain.dto.*;
 import com.studyhere.studyhere.domain.entity.Account;
 
-import com.studyhere.studyhere.domain.entity.AccountTag;
+
 import com.studyhere.studyhere.domain.entity.Tag;
 import com.studyhere.studyhere.domain.entity.Zone;
 import com.studyhere.studyhere.domain.userdetail.CurrentUser;
@@ -12,7 +12,7 @@ import com.studyhere.studyhere.domain.userdetail.UserAccount;
 import com.studyhere.studyhere.email.EmailMessage;
 import com.studyhere.studyhere.email.EmailService;
 import com.studyhere.studyhere.repository.AccountRepository;
-import com.studyhere.studyhere.repository.AccountTagRepository;
+
 import com.studyhere.studyhere.repository.ZoneRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,6 @@ import java.util.Set;
 public class AccountService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
-    private final AccountTagRepository accountTagRepository;
     private final ZoneRepository zoneRepository;
     private final TagService tagService;
     private final EmailService emailService;
@@ -188,37 +187,32 @@ public class AccountService implements UserDetailsService {
         mailSender.send(mail);*/
     }
 
-    public void addInterestOfMember(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+
+  /*  public void addInterestOfMember(@CurrentUser Account account, @RequestBody TagForm tagForm) {
         //1.관심주제 제목으로 관심주제 생성(이미 존재하면 값 반환)
         Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
         //2.회원(account)과 관심주제(tag)를 accountTag(회원관심주제)에 저장
         AccountTag accountTag = AccountTag.createAccountTag(account, tag);
         accountTagRepository.save(accountTag);
-    }
+    }*/
+
+
 
     /**
      * 1. accountTag 에서 account로 해당 accountTag  조회 ->  (List<AccountTag>)
      * 2. 회원의 태그 저장소(tagStore)에 해당 accountTag의 제목을 add
      * 3. 회원의 태그 반환
      * **/
-    public List<String> getTags(Account account) {
-        List<AccountTag> accountTags = accountTagRepository.findByAccount(account);
-        List<String> tagStore = new ArrayList<>();
-        for (AccountTag accountTag : accountTags) {
-            String title = accountTag.getTag().getTitle();
-            tagStore.add(title);
-        }
-        return tagStore;
+    public Set<Tag> getTags(Account account) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        return byId.orElseThrow().getTags();
     }
+
 
     /**해당 회원의 태그 지우기**/
     public void removeTag(Account account, Tag tag) {
-        //회원 조회
-        Account owner = accountRepository.findById(account.getId())
-                .orElseThrow(() -> new IllegalStateException("존재 하지 않는 회원 입니다."));
-        //
-        AccountTag accountTag = accountTagRepository.findByAccountAndTag(owner, tag);
-        accountTagRepository.delete(accountTag);
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getTags().remove(tag));
     }
     /**회원의 지역 리스트 반환**/
     public Set<Zone> getZones(Account account) {
@@ -242,6 +236,12 @@ public class AccountService implements UserDetailsService {
         //해당 회원의 지역에 delete(),remove()
         owner.getZones().remove(zone);
     }
+
+    public void addTag(Account account, Tag tag) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getTags().add(tag));
+    }
+
 
 
     /**
