@@ -67,6 +67,10 @@
     - ApplicationEventPublisher와 스프링 @Async 기능을 사용해서 비동기 이벤트 기반으로 알림 처리.
     - 주요 로직 응답 시간에 영향을 주지 않기(코드를 최대한 주요 로직에 집중하고 알림 처리 로직은 분리.)
     - 핸들러 처리 이후, 뷰 랜더링 전에 스프링 웹 MVC HandlerInterceptor로 **읽지 않은 메시지가 있는지** 확인 후 알림서비스 제공    
+    - QueryDsl Predicate를 회원의 관심주제와 선호지역이 일치하는 스터디가 오픈했을 때 알림 발송 
+- [x] 스터디 검색
+    - 스터디 검색 시 스터디 제목, 스터디 지역, 스터디 태그으로 검색이 가능하다.
+    - QueryDsl로 검색을 구현 left(outer) join + fetchJoin + distinct 방식으로 N+1 문제 해결 
     
     
     
