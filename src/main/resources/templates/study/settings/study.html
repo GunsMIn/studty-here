@@ -37,7 +37,7 @@
                     </form>
                     <div th:if="${study.closed}" class="col-sm-12 alert alert-info">
                         이 스터디는 <span class="date-time" th:text="${study.closedDateTime}"></span>에 종료됐습니다.<br/>
-                        다시 스터디를 진행하고 싶다면 새로운 스터디를 만드세요.<br/>
+                        다시 스터디를 진행하고 싶다면 새로운 스터디를 만드세요.(종료된 스터디는 다시 Open할 수 없습니다.)<br/>
                     </div>
                 </div>
 
@@ -116,7 +116,6 @@
                         </div>
                     </form>
                 </div>
-
                 <hr/>
                 <div class="row" th:if="${study.isRemovable()}">
                     <h5 class="col-sm-12 text-danger">스터디 삭제</h5>
@@ -148,6 +147,7 @@
                 </div>
             </div>
         </div>
+
         <div th:replace="fragments.html :: footer"></div>
     </div>
     <script th:replace="fragments.html :: tooltip"></script>
