@@ -1,22 +1,29 @@
 package com.studyhere.studyhere.controller;
 
+import com.studyhere.studyhere.domain.entity.Study;
 import com.studyhere.studyhere.domain.userdetail.CurrentUser;
 import com.studyhere.studyhere.domain.entity.Account;
 import com.studyhere.studyhere.repository.NotificationRepository;
+import com.studyhere.studyhere.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MainController {
 
-    private final NotificationRepository notificationRepository;
 
-    /**메인화면**/
+    private final StudyRepository studyRepository;
+
+    /**
+     * 메인화면
+     **/
     @GetMapping("/")
     public String home(@CurrentUser Account account, Model model) {
         if (account != null) {
@@ -30,10 +37,21 @@ public class MainController {
         return "index";
     }
 
-
-    /**로그인 화면이동**/
+    /**
+     * 로그인 화면이동
+     **/
     @GetMapping("/login")
     public String login() {
         return "login";
+    }
+
+
+    @GetMapping("/search/study")
+    public String searchStudy(String keyword,Model model) {
+        List<Study> studyList = studyRepository.findByKeyword(keyword);
+        model.addAttribute("studyList",studyList);
+        model.addAttribute("keyword", keyword);
+        return "search";
+
     }
 }
