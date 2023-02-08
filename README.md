@@ -23,6 +23,10 @@
     - crontab 기능을 활용하여 정기적으로 deploy.sh를 실행하도록 설정
 
 - [x] User 회원가입 및 로그인 기능 구현
+
+   [프로젝트 : Spring security 로그인/로그아웃 정리본](https://velog.io/@guns95/Spring-security%EC%97%90%EC%84%9C%EC%9D%98-%EB%A1%9C%EA%B7%B8%EC%9D%B8%EB%A1%9C%EA%B7%B8%EC%95%84%EC%9B%83)
+   <br>
+    [프로젝트 : 로그인 정보 기억하기](https://velog.io/@guns95/Spring-Security-Remeber-Me%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%A0%95%EB%B3%B4-%EA%B8%B0%EC%96%B5%ED%95%98%EA%B8%B0)
     - 회원가입 시, 아이디와 비밀번호를 입력받고, 중복된 아이디의 경우 회원가입 에러 발생
     - 회원가입 완료 시, 자동 로그인 기능 
     - 로그인 후, SMTP를 이용하여 이메일 인증 토큰을 발급(악의적인 이메일 발송을 막기위한 이메일 발송 1시간안에 1번 발송 가능 설계)
