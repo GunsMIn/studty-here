@@ -1,5 +1,5 @@
 # studty-here
-스터디를 구하는 사이트
+스터디를 개설하고 스터디원들과 모임을 갖을 수 있는 서비스
 ## 개발환경
 <br>
 
@@ -12,7 +12,8 @@
 - **IDE** : IntelliJ
 <br>
 
-
+# ERD 다이어그램
+![스터디히어 (12)](https://user-images.githubusercontent.com/104709432/217535176-c3527fa7-68c6-4a55-aa61-bdbd7c3c856b.png)
 
 ## 체크리스트
 
@@ -27,7 +28,7 @@
     - 로그인 후, SMTP를 이용하여 이메일 인증 토큰을 발급(악의적인 이메일 발송을 막기위한 이메일 발송 1시간안에 1번 발송 가능 설계)
 - [x] Spring security
     - Spring security의 form login 방식을 채택
-    - 인증 / 인가 
+    - Spring security 인증 / 인가 
     - rememberMe를 이용한 Remember-Me 토큰 쿠키 발급 -> 로그인 유지 
 - [x] 프로필
     - 프로필 입력 기능 : 한 줄 소개,링크,직업.활동 지역 (modelMapper를 이용한 view 데이터 전송)
