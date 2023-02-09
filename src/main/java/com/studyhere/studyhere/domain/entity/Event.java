@@ -5,6 +5,8 @@ import com.studyhere.studyhere.domain.dto.EventForm;
 import com.studyhere.studyhere.domain.entity.enumtype.EventType;
 import com.studyhere.studyhere.domain.userdetail.UserAccount;
 import lombok.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -37,6 +39,7 @@ public class Event {
     private Account createdBy;
 
     @OneToMany(mappedBy = "event")
+    @NotFound(action = NotFoundAction.IGNORE)
     @OrderBy("enrolledAt")
     private List<Enrollment> enrollments = new ArrayList<>();
 
@@ -140,8 +143,8 @@ public class Event {
     public void changeEvent(EventForm eventForm) {
         this.title = eventForm.getTitle();
         this.description = eventForm.getDescription();
-        this.eventType = eventForm.getEventType();
         this.endEnrollmentDateTime = eventForm.getEndEnrollmentDateTime();
+        this.limitOfEnrollments = eventForm.getLimitOfEnrollments();
         this.startDateTime = eventForm.getStartDateTime();
         this.endDateTime = eventForm.getEndDateTime();
     }

@@ -1,8 +1,8 @@
 package com.studyhere.studyhere.domain.entity;
 
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -21,6 +21,7 @@ public class Enrollment {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "event_id")
     private Event event;
 
@@ -35,7 +36,6 @@ public class Enrollment {
 
     /**참석 여부**/
     private boolean attended;
-
 
 
     public void changeAccepted(boolean value) {

@@ -1,11 +1,15 @@
 package com.studyhere.studyhere.repository;
 
+import com.studyhere.studyhere.domain.entity.Account;
 import com.studyhere.studyhere.domain.entity.Study;
+import com.studyhere.studyhere.domain.entity.Tag;
+import com.studyhere.studyhere.domain.entity.Zone;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Transactional(readOnly = true)
 public interface StudyRepository extends JpaRepository<Study, Long> , StudyRepositoryExtension{
@@ -31,4 +35,17 @@ public interface StudyRepository extends JpaRepository<Study, Long> , StudyRepos
 
     @EntityGraph(attributePaths = {"members", "managers"})
     Study findStudyWithManagersAndMemebersById(Long id);
+
+
+
+
+
+    List<Study> findFirst5ByManagersContainingAndClosedOrderByPublishedDateTimeDesc(Account account, boolean closed);
+
+    List<Study> findFirst5ByMembersContainingAndClosedOrderByPublishedDateTimeDesc(Account account, boolean closed);
+
+    @EntityGraph(attributePaths = {"zones", "tags"})
+    List<Study> findFirst9ByPublishedAndClosedOrderByPublishedDateTimeDesc(boolean published, boolean closed);
+
+
 }

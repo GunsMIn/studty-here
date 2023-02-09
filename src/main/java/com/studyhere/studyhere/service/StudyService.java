@@ -8,11 +8,15 @@ import com.studyhere.studyhere.domain.entity.Zone;
 import com.studyhere.studyhere.domain.events.event.StudyCreatedEvent;
 import com.studyhere.studyhere.domain.events.event.StudyUpdateEvent;
 import com.studyhere.studyhere.repository.StudyRepository;
+import com.studyhere.studyhere.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.internal.bytebuddy.utility.RandomString;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
 
 import static com.studyhere.studyhere.domain.dto.StudyForm.*;
 
@@ -23,6 +27,7 @@ public class StudyService {
 
     private final StudyRepository studyRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final TagRepository tagRepository;
 
     /**스터디 생성
      * 알림처리
@@ -197,5 +202,29 @@ public class StudyService {
             throw new IllegalStateException("해당 스터디를 찾을 수 없습니다");
         }
         return study;
+    }
+
+
+
+
+
+    public void generateTestData(Account account) {
+        for (int i = 0; i < 30 ; i++) {
+            String randomValue = RandomString.make(5);
+
+            Study study = Study.builder()
+                    .title("테스트 스터디" + randomValue)
+                    .path("test" + randomValue)
+                    .shortDescription("테스트용 스터디 입니다.")
+                    .fullDescription("test fullDescription")
+                    .tags(new HashSet<>())
+                    .managers(new HashSet<>())
+                    .build();
+
+            study.publishStudyState();
+            Study newStudy = createNewStudy(study, account);
+            Tag jpa = tagRepository.findByTitle("JPA");
+            newStudy.getTags().add(jpa);
+        }
     }
 }

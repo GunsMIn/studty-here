@@ -97,7 +97,7 @@ public class StudyEventListener {
         Notification notification = new Notification();
         notification.setTitle(study.getTitle());
         notification.setLink("/study/" + study.encodePath());
-        notification.setChecked(false);
+        notification.setChecked(false); // 아직 확인하지 않은 알람
         notification.setCreatedDateTime(LocalDateTime.now());
         notification.setMessage(message);
         notification.setAccount(account);

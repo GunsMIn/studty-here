@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -37,7 +38,9 @@ public class StudyForm {
                 .path(studyForm.getPath())
                 .title(studyForm.getTitle())
                 .shortDescription(studyForm.getShortDescription())
-                .fullDescription(studyForm.getFullDescription()).build();
+                .fullDescription(studyForm.getFullDescription()).
+                        publishedDateTime(LocalDateTime.now()).
+                        build();
     }
 
 }

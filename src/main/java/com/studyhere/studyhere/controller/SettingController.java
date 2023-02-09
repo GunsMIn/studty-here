@@ -159,7 +159,7 @@ public class SettingController {
         return "redirect:/settings/account";
     }
 
-    /**ManyToMany**/
+
     @GetMapping("/settings/tags")
     public String showTags(@CurrentUser Account account, Model model) throws JsonProcessingException {
         model.addAttribute(account);
