@@ -4,6 +4,7 @@ import com.studyhere.studyhere.domain.dto.SignUpForm;
 import com.studyhere.studyhere.domain.entity.Account;
 import com.studyhere.studyhere.domain.userdetail.CurrentUser;
 import com.studyhere.studyhere.repository.AccountRepository;
+import com.studyhere.studyhere.repository.StudyRepository;
 import com.studyhere.studyhere.service.AccountService;
 import com.studyhere.studyhere.validator.SignUpFormValidator;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class AccountController {
 
     private final AccountService accountService;
     private final AccountRepository accountRepository;
+    private final StudyRepository studyRepository;
     private final SignUpFormValidator signUpFormValidator;
 
 
@@ -57,7 +59,7 @@ public class AccountController {
         }
         Account account = accountService.processNewAccount(signUpForm);
         accountService.login(account);
-        return "redirect:/";
+        return "redirect:/settings/tags";
     }
 
     /**유효한 이메일인지 check
@@ -92,6 +94,10 @@ public class AccountController {
         if (nickname == null) {
             throw new IllegalStateException(nickname + "에 해당하는 사용자가 없습니다.");
         }
+        model.addAttribute("studyManagerOf",
+                studyRepository.findFirst5ByManagersContainingAndClosedOrderByPublishedDateTimeDesc(account, false));
+        model.addAttribute("studyMemberOf",
+                studyRepository.findFirst5ByMembersContainingAndClosedOrderByPublishedDateTimeDesc(account, false));
         // Owner인지 확인하는 flag
         boolean isOwner = byNickname.equals(account);
         model.addAttribute("account",byNickname);

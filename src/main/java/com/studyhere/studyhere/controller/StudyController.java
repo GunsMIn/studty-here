@@ -34,7 +34,9 @@ public class StudyController {
         webDataBinder.addValidators(studyFormValidator);
     }
 
-    /**스터디 개설 페이지 이동**/
+    /**
+     * 스터디 개설 페이지 이동
+     **/
     @GetMapping("/new-study")
     public String newStudyForm(@CurrentUser Account account, Model model) {
         model.addAttribute(account);
@@ -42,7 +44,9 @@ public class StudyController {
         return "study/form";
     }
 
-    /**스터디 생성**/
+    /**
+     * 스터디 생성
+     **/
     @PostMapping("/new-study")
     public String newStudySubmit(@CurrentUser Account account, @Valid StudyForm studyForm, Errors errors, Model model) {
         if (errors.hasErrors()) {
@@ -51,30 +55,35 @@ public class StudyController {
         }
         Study study = modelMapper.map(studyForm, Study.class);
         Study newStudy = studyService.createNewStudy(study, account);
-        return "redirect:/study/" + URLEncoder.encode(newStudy.getPath(),StandardCharsets.UTF_8);
+        return "redirect:/study/" + URLEncoder.encode(newStudy.getPath(), StandardCharsets.UTF_8);
     }
 
-    /**스터디 상세보기**/
+    /**
+     * 스터디 상세보기
+     **/
     @GetMapping("/study/{path}")
-    public String viewStudy(@CurrentUser Account account, @PathVariable String path,Model model) {
+    public String viewStudy(@CurrentUser Account account, @PathVariable String path, Model model) {
         Study findStudy = studyService.findStudy(path);
         studyService.checkStudy(path);
         model.addAttribute("study", findStudy);
         return "study/view";
     }
 
-    /**스터디 참여인 보기 페이지 이동**/
+    /**
+     * 스터디 참여인 보기 페이지 이동
+     **/
     @GetMapping("/study/{path}/members")
-    public String viewStudyMembers(@CurrentUser Account account,@PathVariable String path,Model model) {
+    public String viewStudyMembers(@CurrentUser Account account, @PathVariable String path, Model model) {
         Study study = studyService.checkStudy(path);
         model.addAttribute(account);
         model.addAttribute(study);
         return "study/members";
     }
 
-    /**스터디 가입
+    /**
+     * 스터디 가입
      * 스터디 가입 시 study의 member(일반회원)에 넣어주기!
-     * **/
+     **/
     @GetMapping("/study/{path}/join")
     public String joinStudy(@CurrentUser Account account, @PathVariable String path) {
         Study study = studyRepository.findStudyWithMembersByPath(path);
@@ -82,11 +91,21 @@ public class StudyController {
         return "redirect:/study/" + study.encodePath() + "/members";
     }
 
-    /**스터디 탈퇴**/
+    /**
+     * 스터디 탈퇴
+     **/
     @GetMapping("/study/{path}/leave")
     public String leaveStudy(@CurrentUser Account account, @PathVariable String path) {
         Study study = studyRepository.findStudyWithMembersByPath(path);
         studyService.removeMember(study, account);
-        return "redirect:/study/" + study.encodePath()+ "/members";
+        return "redirect:/study/" + study.encodePath() + "/members";
+    }
+
+
+    /**테스트용 스터디 만드는 용도 🔽**/
+    @GetMapping("/study/data")
+    public String generateTestData(@CurrentUser Account account) {
+        studyService.generateTestData(account);
+        return "redirect:/";
     }
 }
