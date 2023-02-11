@@ -31,4 +31,4 @@ jwt:
     secret: payhere.hello.world
 
 app:
-  host: http://localhost:8898
+  host: ec2-52-79-237-83.ap-northeast-2.compute.amazonaws.com

@@ -59,6 +59,7 @@ public class EventController {
     public String createEvent(@CurrentUser Account account, @PathVariable String path, @Valid EventForm eventForm ,
                                                         BindingResult result, Model model) {
         log.info(eventForm.toString());
+        //모임을 만들기 위해서는 study와 manager 참조만으로 가능 @EntityGraphe
         Study study = studyService.findStudyFetchManager(account, path);
         if (result.hasErrors()) {
             model.addAttribute(account);
@@ -151,6 +152,7 @@ public class EventController {
         return "redirect:/study/" + study.encodePath() + "/events/" + event.getId();
     }
 
+    /**모임 신청 취소**/
     @PostMapping("/events/{id}/disenroll")
     public String cancelEnrollment(@CurrentUser Account account, @PathVariable String path, @PathVariable("id") Event event) {
         Study study = studyService.findStudyByPath(path);
