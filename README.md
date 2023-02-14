@@ -9,7 +9,7 @@
 <br>
 
 - **Java 11**
-- **Build** : Gradle 7.6
+- **Build** : Gradle 7.6 
 - **Framework** : Springboot 2.7.7
 - **CI & CD** : GitLab
 - **Server** : AWS EC2
