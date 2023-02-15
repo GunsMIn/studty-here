@@ -1,5 +1,5 @@
 # studty-here
-## [스터디히어 프로젝트영상](https://www.youtube.com/watch?v=zPXeYeUSgkg&t=229s) <br>
+## [스터디히어 프로젝트영상](https://www.youtube.com/watch?v=zPXeYeUSgkg&t=229s) 
 - **직접 스터디를 개설하고 스터디원들과 모임을 갖을 수 있는 서비스**
 - **관심주제에 맞는 선호지역에 맞게 스터디와 스터디 모임을 검색 및 추천해주는 서비스** <br>
 
