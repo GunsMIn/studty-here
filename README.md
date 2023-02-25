@@ -6,6 +6,20 @@
 
 </p>
 
+### 프로젝트 결과
+[📎스터디히어 프로젝트 시연영상 링크](https://www.youtube.com/watch?v=zPXeYeUSgkg&t=229s)
+<br>
+[📎 서비스 UI](http://ec2-13-125-252-76.ap-northeast-2.compute.amazonaws.com:8080/)
+
+📌 프로젝트 기술스택
+- 에디터 : Intellij Ultimate
+- 개발 툴 : SpringBoot 2.7.6
+- 자바 : JAVA 11
+- 빌드 : Gradle 6.8
+- 서버 : AWS EC2
+- 데이터베이스 : MySql 8.0
+- 필수 라이브러리 : SpringBoot Web, MySQL, Spring Data JPA, Lombok, Spring Security
+
 # ERD 다이어그램
 ![스터디히어](https://user-images.githubusercontent.com/104709432/217971669-619734fb-f0dc-48d7-b09b-60b078971530.png)
 
