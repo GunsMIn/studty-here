@@ -101,21 +101,129 @@
    
     - 스터디 검색 시 스터디 제목, 스터디 지역, 스터디 태그으로 검색이 가능하다.
     - **QueryDsl로 검색을 구현 left(outer) join + fetchJoin + distinct 방식으로 N+1 문제 해결** 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-  
+#### 메인페이지
+![](https://velog.velcdn.com/images/guns95/post/3235eed4-0211-4769-a6d7-eabab059b4a0/image.PNG)
+
+#### 회원가입페이지
+> - 닉네임과 이메일 중복체크 
+- 이메일 형식 체크 / 패스워드 형식 체크
+
+![](https://velog.velcdn.com/images/guns95/post/865b4188-24ea-453b-9630-c497ef1200ca/image.PNG)
+
+#### 관심주제 등록 페이지
+- Ajax를 이용한 비동기 방식의 관심주제 등록
+![](https://velog.velcdn.com/images/guns95/post/274623e5-7bce-422d-94c2-abb3cc783c58/image.PNG)
+
+#### 선호지역 등록 페이지
+- Ajax를 이용한 비동기 방식의 선호지역 등록
+![](https://velog.velcdn.com/images/guns95/post/3922d24e-7243-48d8-a0e6-133f6f155455/image.PNG)
+
+#### 로그인 후 메인페이지
+>- 선호지역과 관심주제에 맞게 스터디 추천 기능 
+>- 관리중인 스터디 / 참여중인 스터디 보기 기능
+
+![](https://velog.velcdn.com/images/guns95/post/87906846-539c-42a9-8d03-f3c42df5178d/image.PNG)
+
+
+#### 프로필 등록 페이지 
+>- 한 줄 자기소개 등록
+>- 블로그 링크 , 깃 허브 링크 등록
+>- 직업, 활동 지역 등록
+>- 프로필 사진 등록
+
+![](https://velog.velcdn.com/images/guns95/post/ce94545b-2638-4f67-a195-8bf22f117a56/image.PNG)
+
+#### 프로필 페이지 (프로필 등록 후)
+![](https://velog.velcdn.com/images/guns95/post/e30f29a0-6549-4a10-9948-bed09ff26289/image.PNG)
+
+
+#### 알림 설정 페이지
+>- 주요 활동 지역과 관심있는 주제의 스터디가 개설되었을때 알림
+>- 스터디 모임 참가 신청 결과 알림
+>- 참여중인 스터디에 업데이트 알림
+위 3개의 알림을 웹 알림과 이메일알림 선택 가능
+
+![](https://velog.velcdn.com/images/guns95/post/b5740ff4-4a26-4d86-97b4-c94a27625359/image.PNG)
+
+#### 패스워드 변경 페이지
+![](https://velog.velcdn.com/images/guns95/post/cc40425c-ba1e-4123-9b6f-80b72351fd98/image.PNG)
+
+#### 닉네임 변경, 계정 삭제 페이지
+![](https://velog.velcdn.com/images/guns95/post/6474a982-33e6-41b9-b588-28d5d7a59903/image.PNG)
+
+#### 스터디 개설 페이지
+>- 스터디 이름, 짧은 소개, 상세 소개 등록
+>- 스터디 등록 후 관심주제와 스터디 지역 선택 가능
+
+![](https://velog.velcdn.com/images/guns95/post/0fee203d-3c5d-49a7-8d3c-7b3482dee68b/image.PNG)
+
+#### 스터디 등록 후 상세페이지
+>- 스터디 소개 페이지
+>- 스터디 구성원 보기 페이지
+>- 스터디 모임 페이지
+>- 스터디 설정 페이지 **(관리자만 확인 가능)**
+
+![](https://velog.velcdn.com/images/guns95/post/ea74c274-aead-4f30-bb3c-64de96824577/image.PNG)
+
+#### 스터디 구성원 페이지
+![](https://velog.velcdn.com/images/guns95/post/abfc2531-4b14-420c-a933-364b198ee7c5/image.PNG)
+
+
+#### 스터디 수정 페이지 (관리자만 가능)
+![](https://velog.velcdn.com/images/guns95/post/7cf1fc73-2ab7-40df-9178-8d9b17d3c1ee/image.PNG)
+
+#### 스터디 배너 등록 페이지(관리자만 가능)
+> - 스터디 히어 기본 배너 이미지 제공 및 사용 가능
+>- 커스텀 배너 이미지 사용 가능 
+
+**배너 적용전**
+![](https://velog.velcdn.com/images/guns95/post/5df34935-7ca0-45aa-8d22-befb64cbfa67/image.PNG)
+**배너 적용 후**
+![](https://velog.velcdn.com/images/guns95/post/68481884-05a8-4a1e-9a2c-edded50d416f/image.PNG)
+
+#### 개설 스터디 관심주제, 선호지역 등록
+>**관심주제 등록(Ajax 비동기 방식 등록)**
+![](https://velog.velcdn.com/images/guns95/post/4e822257-d5c6-47a5-93bd-723924d322bd/image.PNG)
+
+>**관심주제 등록(Ajax 비동기 방식 등록)**
+![](https://velog.velcdn.com/images/guns95/post/32ddb9b4-8ae4-4426-9560-068b40ead261/image.PNG)
+
+#### 스터디 공개 및 팀원 모집 시작 가능페이지
+>- 스터디 비공개 <-> 공개 전환 기능
+>- 스터디 팀원 모집 시작 기능
+
+![](https://velog.velcdn.com/images/guns95/post/0ec42d9a-4de4-4da6-b3d0-a682b2cb3ec2/image.PNG)
+
+#### 스터디 모임 개설 페이지
+>- 모집 방법 선택가능
+>	- 선착순 모집
+>	- 관리잠 참여 확인 모집
+>- 모집 인원 , 등록 마감 일시 , 모임 시작 일시 , 모임 종료 일시 선택
+
+![](https://velog.velcdn.com/images/guns95/post/1f01dc99-3fa0-449d-899d-081bb743161a/image.PNG)
+
+#### 모임 상세 페이지 (모임 개설 후)
+![](https://velog.velcdn.com/images/guns95/post/bd1c1850-8ab3-4f8a-b891-3185881b6296/image.PNG)
+
+
+#### 모임 리스트 페이지
+- 새모임과 지난 모임 모두 확인 가능
+![](https://velog.velcdn.com/images/guns95/post/138318cb-bb25-456e-b147-1567ef6b35b5/image.PNG)
+
+#### 모임 참여 신청 페이지
+![](https://velog.velcdn.com/images/guns95/post/943598d6-5e34-4826-ba70-23d7d42705f1/image.PNG)
+
+#### 스터디 검색 페이지
+>- 스터디 검색 기능(스터디 제목 , 스터디 지역 , 스터디 주제로 검색)
+>- 검색 키워드 하이라이트 처리
+
+![](https://velog.velcdn.com/images/guns95/post/24611dea-9b17-47f3-88b2-700b76dedf4b/image.PNG)
+
+#### 실시간 알림 페이지
+>- 1. 참여중인 스터디 알림
+>- 2. 관심 주제 스터디, 선호 지역 스터디 개설 시 알림
+>- 3. 참여중인 모임 알림
+>- 읽지 않은 알림 / 읽은 알림 확인 가능
+>- 읽은 알림 삭제 기능
+
+![](https://velog.velcdn.com/images/guns95/post/1d8823ac-a6f9-40d3-a2ef-2c9b60fa96a5/image.PNG)
