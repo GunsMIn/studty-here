@@ -6,18 +6,6 @@
 
 </p>
 
-## 개발환경
-<br>
-
-- **Java 11**
-- **Build** : Gradle 7.6 
-- **Framework** : Springboot 2.7.7
-- **CI & CD** : GitLab
-- **Server** : AWS EC2
-- **Deploy** : Docker
-- **IDE** : IntelliJ
-<br>
-
 # ERD 다이어그램
 ![스터디히어](https://user-images.githubusercontent.com/104709432/217971669-619734fb-f0dc-48d7-b09b-60b078971530.png)
 
