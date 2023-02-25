@@ -227,3 +227,5 @@
 >- 읽은 알림 삭제 기능
 
 ![](https://velog.velcdn.com/images/guns95/post/1d8823ac-a6f9-40d3-a2ef-2c9b60fa96a5/image.PNG)
+
+## [🔼 스터디히어 프로젝트 시연영상 링크](https://www.youtube.com/watch?v=zPXeYeUSgkg&t=229s) 
